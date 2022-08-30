@@ -1,6 +1,5 @@
 import type { NextPage } from 'next';
 import Header from '@components/layout/header';
-import Head from 'next/head';
 
 const Home: NextPage = () => {
   return (

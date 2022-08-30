@@ -69,6 +69,8 @@ const getNetworkName = (networkId: string) => {
       return 'Georli TestNet';
     case '5777':
       return 'Ganache TestNet';
+    case '1661697429340':
+      return 'Ganache TestNet';
     default:
       return 'undefined';
   }
