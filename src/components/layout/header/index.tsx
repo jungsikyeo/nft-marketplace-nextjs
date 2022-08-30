@@ -54,17 +54,14 @@ export default function Header({ title }: HeaderProps) {
       const web = new Web3(ethereum);
       setWeb3(web);
 
-      const chainId = await ethereum.request({ method: 'eth_chainId' });
-      console.log(ethereum);
+      const networkId = ethereum.networkVersion;
+      const networkName = getNetworkName(networkId);
 
-      const ganacheTestChainId = '0x539';
-      if (chainId !== ganacheTestChainId) {
+      if (networkName === 'undefined') {
         alert('you are not connected to the ethereum testnet!');
         setCorrectNetwork(false);
         return;
       } else {
-        const networkId = ethereum.networkVersion;
-        const networkName = getNetworkName(networkId);
         setNetwork(networkName);
         setCorrectNetwork(true);
       }
