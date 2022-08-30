@@ -1,6 +1,6 @@
 import React from 'react';
-import { Button } from '../../atoms';
-import { SectionWrapper } from '../../moleculs';
+import { Button } from '@components/atoms';
+import { SectionWrapper } from '@components/moleculs';
 
 const SectionButton = () => {
   return (

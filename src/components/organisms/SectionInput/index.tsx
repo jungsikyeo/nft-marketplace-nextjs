@@ -1,6 +1,6 @@
 import { Col, Form, Input, Row } from 'antd';
 import React from 'react';
-import { SectionWrapper } from '../../moleculs';
+import { SectionWrapper } from '@components/moleculs';
 
 const SectionInput = () => {
   return (

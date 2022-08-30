@@ -58,17 +58,17 @@ const changedNetworkNoti = (chainName: string) => {
 const getNetworkName = (networkId: string) => {
   switch (networkId) {
     case '1':
-      return 'Ethereum Main Network';
+      return 'Ethereum MainNet';
     case '3':
-      return 'Ropsten Test Network';
+      return 'Ropsten TestNet';
     case '42':
-      return 'Kovan Test Network';
+      return 'Kovan TestNet';
     case '4':
-      return 'Rinkeby Test Network';
+      return 'Rinkeby TestNet';
     case '5':
-      return 'Georli Test Network';
+      return 'Georli TestNet';
     case '5777':
-      return 'Ganache Test Network';
+      return 'Ganache TestNet';
     default:
       return 'undefined';
   }

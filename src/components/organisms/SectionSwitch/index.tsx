@@ -1,6 +1,6 @@
 import { Form, Switch } from 'antd';
 import React from 'react';
-import { SectionWrapper } from '../../moleculs';
+import { SectionWrapper } from '@components/moleculs';
 
 const SectionSwitch = () => {
   return (
