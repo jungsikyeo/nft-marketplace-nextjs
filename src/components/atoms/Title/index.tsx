@@ -4,7 +4,11 @@ import { Props } from './title.props';
 
 const { Title: ATitle } = Typography;
 
-const Title: React.FC<Props> = ({ type = 'title-content', text }) => {
+const Title: React.FC<Props> = ({
+  type = 'title-content',
+  text,
+  className
+}) => {
   const getType = () => {
     if (type === 'title-content') return 1;
     if (type === 'title-section') return 2;
@@ -12,7 +16,11 @@ const Title: React.FC<Props> = ({ type = 'title-content', text }) => {
     return 1;
   };
 
-  return <ATitle level={getType()}>{text}</ATitle>;
+  return (
+    <ATitle level={getType()} className={className}>
+      {text}
+    </ATitle>
+  );
 };
 
 export default Title;
