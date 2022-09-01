@@ -1,13 +1,21 @@
 import { useState } from 'react';
 import type { NextPage } from 'next';
 import { Title, Button } from '@components/atoms';
-import { Divider, message, Upload, Input, Modal, Select, Form } from 'antd';
-import OpenPlanet from '@abis/OpenPlanet.json';
+import {
+  Divider,
+  message,
+  Upload,
+  Input,
+  Modal,
+  Select,
+  InputNumber
+} from 'antd';
 import { File, NFTStorage } from 'nft.storage';
 import { PlusOutlined } from '@ant-design/icons';
 import { cls } from '@libs/client/utils';
 import { RcFile } from 'antd/lib/upload';
 import { useRouter } from 'next/router';
+import { Option } from 'antd/lib/mentions';
 
 type Network = [
   string,
@@ -48,6 +56,7 @@ const Create: NextPage = ({ currentAccount, contract }) => {
   const [image, setImage] = useState(null);
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
+  const [supply, setSupply] = useState(1);
   const [previewVisible, setPreviewVisible] = useState(false);
   const [previewImage, setPreviewImage] = useState('');
   const [previewTitle, setPreviewTitle] = useState('');
@@ -128,6 +137,10 @@ const Create: NextPage = ({ currentAccount, contract }) => {
 
   const handleName = (event: any) => setName(event.target.value);
 
+  const handleDescription = (event: any) => setDescription(event.target.value);
+
+  const handleSupply = (value: number) => setSupply(value);
+
   const onMint = async () => {
     console.log(loading);
     setLoading(true);
@@ -173,7 +186,7 @@ const Create: NextPage = ({ currentAccount, contract }) => {
       <div className="w-full h-screen flex justify-center">
         <main className="flex flex-col items-start sm:w-1/2 md:w-2/5 w-2/3 py-11">
           <Title type="title-content" text="Create New Item" />
-          <section className={cls([...sectionClass, 'mb-0'])}>
+          <section className={sectionClass}>
             <div className={`${titleClass} ${requireClass}`}>
               Image, Video, Audio, or 3D Model
             </div>
@@ -227,6 +240,7 @@ const Create: NextPage = ({ currentAccount, contract }) => {
               <Input.TextArea
                 rows={4}
                 placeholder="Provide a detailed description of your item."
+                onChange={handleDescription}
               />
             </div>
           </section>
@@ -245,17 +259,36 @@ const Create: NextPage = ({ currentAccount, contract }) => {
               The number of items that can be minted. No gas cost to you!
             </div>
             <div>
-              <Input placeholder="Selection collection" />
+              <InputNumber
+                onChange={handleSupply}
+                placeholder="Selection collection"
+                min={1}
+                defaultValue={1}
+              />
             </div>
           </section>
           <section className={sectionClass}>
             <div className={titleClass}>Blockchain</div>
             <div>
-              <Select placeholder="default" />
+              <Select
+                defaultValue="ethereum"
+                style={{ width: '100%', height: '50px' }}
+              >
+                <Option value="ethereum">Ethereum</Option>
+                <Option value="solana" disabled>
+                  Solana
+                </Option>
+                <Option value="polygon" disabled>
+                  Polygon
+                </Option>
+                <Option value="klaytn" disabled>
+                  Klaytn
+                </Option>
+              </Select>
             </div>
           </section>
           <Divider />
-          <section className={cls([...sectionClass, 'pb-20'])}>
+          <section className={cls([...sectionClass, 'mb-10'])}>
             <Button
               type="primary"
               className="w-24 h-12"
