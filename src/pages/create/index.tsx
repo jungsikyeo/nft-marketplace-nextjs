@@ -17,20 +17,13 @@ import { RcFile } from 'antd/lib/upload';
 import { useRouter } from 'next/router';
 import { Option } from 'antd/lib/mentions';
 
-type Network = [
-  string,
-  {
-    events: {};
-    links: {};
-    address: string;
-    transactionHash: string;
-  }
-];
-
 type Nft = {
   image: File;
   name: string;
   description?: string;
+  supply: number;
+  collection?: string;
+  blockchain: string;
 };
 
 const requireClass = `after:content-['*'] after:ml-1 after:text-danger after:font-semibold`;
@@ -57,6 +50,8 @@ const Create: NextPage = ({ currentAccount, contract }) => {
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
   const [supply, setSupply] = useState(1);
+  const [collection, setCollection] = useState('');
+  const [blockchain, setBlockchain] = useState('');
   const [previewVisible, setPreviewVisible] = useState(false);
   const [previewImage, setPreviewImage] = useState('');
   const [previewTitle, setPreviewTitle] = useState('');
@@ -141,6 +136,10 @@ const Create: NextPage = ({ currentAccount, contract }) => {
 
   const handleSupply = (value: number) => setSupply(value);
 
+  const handleCollection = (value: string) => setCollection(value);
+
+  const handleBlockchain = (value: string) => setBlockchain(value);
+
   const onMint = async () => {
     console.log(loading);
     setLoading(true);
@@ -160,7 +159,10 @@ const Create: NextPage = ({ currentAccount, contract }) => {
     const nft: Nft = {
       image,
       name,
-      description
+      description,
+      supply,
+      collection,
+      blockchain
     };
 
     if (!loading) {
@@ -250,7 +252,11 @@ const Create: NextPage = ({ currentAccount, contract }) => {
               This is the collection where your item will appear.
             </div>
             <div>
-              <Input placeholder="default" />
+              <Select
+                style={{ width: '100%' }}
+                placeholder="Select collection"
+                onChange={handleCollection}
+              ></Select>
             </div>
           </section>
           <section className={sectionClass}>
@@ -272,7 +278,8 @@ const Create: NextPage = ({ currentAccount, contract }) => {
             <div>
               <Select
                 defaultValue="ethereum"
-                style={{ width: '100%', height: '50px' }}
+                style={{ width: '100%' }}
+                onChange={handleBlockchain}
               >
                 <Option value="ethereum">Ethereum</Option>
                 <Option value="solana" disabled>
