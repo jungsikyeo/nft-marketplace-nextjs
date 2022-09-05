@@ -11,7 +11,7 @@ contract OpenPlanet is ERC721URIStorage, Ownable, ERC721Enumerable {
   using Counters for Counters.Counter;
   Counters.Counter private _tokenIds;
 
-  constructor() public ERC721('openpNFT', 'PNFT') {}
+  constructor() public ERC721('openPlanetNFT', 'OPNFT') {}
 
   function _beforeTokenTransfer(
     address from,

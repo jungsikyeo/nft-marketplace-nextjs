@@ -1,26 +1,28 @@
-import { useState } from 'react';
-import type { NextPage } from 'next';
+import { useEffect, useState } from 'react';
+import type { GetServerSideProps, NextPage } from 'next';
 import { Title, Button } from '@components/atoms';
-import {
-  Divider,
-  message,
-  Upload,
-  Input,
-  Modal,
-  Select,
-  InputNumber
-} from 'antd';
-import { File, NFTStorage } from 'nft.storage';
+import { Divider, Upload, Input, Modal, Select, InputNumber } from 'antd';
+import { File } from 'nft.storage';
 import { PlusOutlined } from '@ant-design/icons';
-import { cls } from '@libs/client/utils';
+import {
+  beforeUpload,
+  cls,
+  extractMetadataUrl,
+  uploadStore
+} from '@libs/client/utils';
 import { RcFile } from 'antd/lib/upload';
 import { useRouter } from 'next/router';
 import { Option } from 'antd/lib/mentions';
+import { PrismaClient } from '@prisma/client';
+import { ethers } from 'ethers';
+
+const prisma = new PrismaClient();
 
 type Nft = {
   image: File;
   name: string;
   description?: string;
+  external_link?: string;
   supply: number;
   collection?: string;
   blockchain: string;
@@ -30,9 +32,6 @@ const requireClass = `after:content-['*'] after:ml-1 after:text-danger after:fon
 const sectionClass = `flex flex-col justify-start w-full mb-8`;
 const titleClass = `text-sm font-bold mb-2`;
 const messageClass = `text-xs font-semibold opacity-40 mb-2`;
-
-const NFT_STORAGE_TOKEN: string =
-  process.env.NEXT_PUBLIC_NFT_STORAGE_TOKEN || '';
 
 const getBase64 = (file: RcFile) =>
   new Promise((resolve, reject) => {
@@ -44,11 +43,19 @@ const getBase64 = (file: RcFile) =>
     reader.onerror = error => reject(error);
   });
 
-const Create: NextPage = ({ currentAccount, contract }) => {
-  const [loading, setLoading] = useState(false);
+const CreateItem: NextPage = ({
+  currentAccount,
+  network,
+  contract,
+  collections
+}) => {
+  const [loading, setLoading] = useState(true);
+  const [submit, setSubmit] = useState(false);
   const [image, setImage] = useState(null);
   const [name, setName] = useState('');
+  const [price, setPrice] = useState(1);
   const [description, setDescription] = useState('');
+  const [externalUrl, setExternalUrl] = useState('');
   const [supply, setSupply] = useState(1);
   const [collection, setCollection] = useState('');
   const [blockchain, setBlockchain] = useState('');
@@ -81,7 +88,6 @@ const Create: NextPage = ({ currentAccount, contract }) => {
       setFileList(newFileList);
       return;
     }
-    setLoading(true);
     const newFile = newFileList[newFileList.length - 1];
     if (newFile) {
       if (beforeUpload(newFile.type, newFile.size)) {
@@ -91,30 +97,6 @@ const Create: NextPage = ({ currentAccount, contract }) => {
         handleCancel();
       }
     }
-    setLoading(false);
-  };
-
-  const beforeUpload = (fileType: string, fileSize: number) => {
-    const isJpgOrPng =
-      fileType === 'image/jpeg' ||
-      fileType === 'image/png' ||
-      fileType === 'image/gif' ||
-      fileType === 'image/svg+xml' ||
-      fileType === 'video/mp4' ||
-      fileType === 'video/webm' ||
-      fileType === 'audio/mp3' ||
-      fileType === 'audio/wav' ||
-      fileType === 'video/ogg' ||
-      fileType === 'model/gltf-binary' ||
-      fileType === 'model/gltf+json';
-    if (!isJpgOrPng) {
-      message.error('This file type cannot be uploaded!');
-    }
-    const isLt100M = fileSize / 1024 / 1024 < 100;
-    if (!isLt100M) {
-      message.error('Image must smaller than 100MB!');
-    }
-    return isJpgOrPng && isLt100M;
   };
 
   const uploadButton = (
@@ -131,61 +113,65 @@ const Create: NextPage = ({ currentAccount, contract }) => {
   );
 
   const handleName = (event: any) => setName(event.target.value);
-
+  const handlePrice = (value: number) => setPrice(value);
   const handleDescription = (event: any) => setDescription(event.target.value);
-
+  const handleExternalUrl = (event: any) => setExternalUrl(event.target.value);
   const handleSupply = (value: number) => setSupply(value);
-
-  const handleCollection = (value: string) => setCollection(value);
-
+  const handleCollection = (value: string) => {
+    setCollection(value);
+  };
   const handleBlockchain = (value: string) => setBlockchain(value);
-
-  const onMint = async () => {
-    console.log(loading);
-    setLoading(true);
-
-    if (!image) {
-      message.warning('Please upload NFT image!');
-      setLoading(false);
-      return;
-    }
-
-    if (!name) {
-      message.warning('Please input NFT name!');
-      setLoading(false);
-      return;
-    }
+  const handleCreate = async () => {
+    setSubmit(true);
 
     const nft: Nft = {
       image,
       name,
+      price,
       description,
+      external_link: externalUrl,
       supply,
       collection,
       blockchain
     };
 
+    console.log(nft);
+
     if (!loading) {
-      const client = new NFTStorage({ token: NFT_STORAGE_TOKEN });
-      const metadata = await client.store(nft);
+      const metadata = await uploadStore(nft);
       contract.methods
-        .mintNFT(
-          currentAccount,
-          `https://ipfs.io/ipfs/${metadata.url.split('//')[1]}`
-        )
+        .mintNFT(currentAccount, extractMetadataUrl(metadata))
         .send({
           from: currentAccount
         })
-        .once('receipt', receipt => {
-          setLoading(false);
-          router.push('/explore');
+        .once('receipt', (receipt: any) => {
+          console.log('receipt:', receipt);
+          setSubmit(false);
+          router.push('/mypage');
         });
     }
   };
 
+  useEffect(() => {
+    setBlockchain('ethereum');
+    setCollection(collections[0]);
+  }, []);
+
+  useEffect(() => {
+    if (submit) {
+      setLoading(true);
+    } else {
+      if (image && name && price) {
+        setLoading(false);
+      } else {
+        setLoading(true);
+      }
+    }
+  }, [image, name, price, submit]);
+
   return (
     <div>
-      <div className="w-full h-screen flex justify-center">
+      <div className="w-full h-full flex justify-center">
         <main className="flex flex-col items-start sm:w-1/2 md:w-2/5 w-2/3 py-11">
           <Title type="title-content" text="Create New Item" />
           <section className={sectionClass}>
@@ -222,6 +208,19 @@ const Create: NextPage = ({ currentAccount, contract }) => {
             </div>
           </section>
           <section className={sectionClass}>
+            <div className={`${titleClass} ${requireClass}`}>Price</div>
+            <div className="w-full">
+              <InputNumber
+                onChange={handlePrice}
+                placeholder="Item Price"
+                min="1"
+                step="0,00001"
+                addonAfter="ETH"
+                stringMode
+              />
+            </div>
+          </section>
+          <section className={sectionClass}>
             <div className={titleClass}>External link</div>
             <div className={messageClass}>
               OpenPlanet will include a link to this URL on this item's detail
@@ -229,7 +228,10 @@ const Create: NextPage = ({ currentAccount, contract }) => {
               welcome to link to your own webpage with more details.
             </div>
             <div>
-              <Input placeholder="https://yoursite.io/item/123" />
+              <Input
+                placeholder="https://yoursite.io/item/123"
+                onChange={handleExternalUrl}
+              />
             </div>
           </section>
           <section className={sectionClass}>
@@ -255,8 +257,16 @@ const Create: NextPage = ({ currentAccount, contract }) => {
               <Select
                 style={{ width: '100%' }}
                 placeholder="Select collection"
+                defaultValue={collections && collections[0]}
                 onChange={handleCollection}
-              ></Select>
+              >
+                {collections &&
+                  collections.map((name: any, key: string) => (
+                    <Option key={key} value={name}>
+                      {name}
+                    </Option>
+                  ))}
+              </Select>
             </div>
           </section>
           <section className={sectionClass}>
@@ -281,14 +291,16 @@ const Create: NextPage = ({ currentAccount, contract }) => {
                 style={{ width: '100%' }}
                 onChange={handleBlockchain}
               >
-                <Option value="ethereum">Ethereum</Option>
-                <Option value="solana" disabled>
+                <Option key="1" value="ethereum">
+                  Ethereum
+                </Option>
+                <Option key="2" value="solana" disabled>
                   Solana
                 </Option>
-                <Option value="polygon" disabled>
+                <Option key="3" value="polygon" disabled>
                   Polygon
                 </Option>
-                <Option value="klaytn" disabled>
+                <Option key="4" value="klaytn" disabled>
                   Klaytn
                 </Option>
               </Select>
@@ -299,9 +311,9 @@ const Create: NextPage = ({ currentAccount, contract }) => {
             <Button
               type="primary"
               className="w-24 h-12"
-              text="Primary"
+              text="Create"
               disabled={loading}
-              onClick={onMint}
+              onClick={handleCreate}
             />
           </section>
         </main>
@@ -310,4 +322,19 @@ const Create: NextPage = ({ currentAccount, contract }) => {
   );
 };
 
-export default Create;
+export default CreateItem;
+
+export const getServerSideProps: GetServerSideProps = async ({ req, res }) => {
+  const collectionList = await prisma.collection.findMany({
+    where: {
+      account: req.account,
+      networkId: req.netrworkId
+    }
+  });
+
+  const collections = collectionList.map(collection => collection.name);
+
+  return {
+    props: { collections }
+  };
+};

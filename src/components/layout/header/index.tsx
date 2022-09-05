@@ -1,6 +1,5 @@
-import { useEffect, useState } from 'react';
 import Head from 'next/head';
-import { Input, Switch } from 'antd';
+import { Input, Menu, MenuProps, Switch } from 'antd';
 import {
   SearchOutlined,
   UserOutlined,
@@ -14,25 +13,23 @@ import {
   LoginOutlined,
   LogoutOutlined
 } from '@ant-design/icons';
-import Web3 from 'web3';
-import {
-  changedAccountNoti,
-  changedNetworkNoti,
-  getNetworkName,
-  loginWarningNoti,
-  logOutSuccessNoti
-} from '@components/notification';
 import Jazzicon, { jsNumberForAddress } from 'react-jazzicon';
 import Link from 'next/link';
+import { useEffect, useState } from 'react';
+import { useRouter } from 'next/router';
 
 interface HeaderProps {
-  network: string;
+  title: string;
+  setTitle: any;
+  network: {
+    networkId: string;
+    networkName: string;
+  };
   isUserLoggedIn: boolean;
   currentAccount: string;
   balance: string;
   sidebar: boolean;
   nightMode: boolean;
-  title?: string;
   setSidebar: any;
   setNightMode: any;
   connectWallet: any;
@@ -44,18 +41,34 @@ interface IWindow {
 }
 
 export default function Header({
+  title,
+  setTitle,
   network,
   isUserLoggedIn,
   currentAccount,
   balance,
   sidebar,
   nightMode,
-  title,
   setSidebar,
   setNightMode,
   connectWallet,
   disconnectWallet
 }: HeaderProps) {
+  const router = useRouter();
+  const [current, setCurrent] = useState('/');
+
+  useEffect(() => {
+    if (router.route.startsWith('/create')) {
+      setTitle('Create');
+    } else if (router.route.startsWith('/mypage')) {
+      setTitle('MyPage');
+    } else if (router.route.startsWith('/explore')) {
+      setTitle('Explore');
+    } else {
+      setTitle('Home');
+    }
+  }, [router.route]);
+
   const handleConnectWallet = async () => {
     if (!isUserLoggedIn) {
       connectWallet();
@@ -77,6 +90,46 @@ export default function Header({
   const handleDisconnectWallet = async () => {
     disconnectWallet();
   };
+
+  const handleMenuLink: MenuProps['onClick'] = e => {
+    setCurrent(e.key);
+    if (e.key === '/user') {
+      handleConnectWallet();
+    } else if (e.key === '/wallet') {
+      setSidebar(!sidebar);
+      handleConnectWallet();
+    } else {
+      router.push(e.key);
+    }
+  };
+  const CreateMenu: MenuProps['items'] = [
+    {
+      label: 'Explore',
+      key: '/explore'
+    },
+    {
+      label: 'Create',
+      key: 'Create',
+      children: [
+        {
+          label: 'New Collection',
+          key: '/create/collection'
+        },
+        {
+          label: 'New Item',
+          key: '/create/item'
+        }
+      ]
+    },
+    {
+      label: <UserOutlined className="text-2xl" />,
+      key: isUserLoggedIn ? '/mypage' : '/user'
+    },
+    {
+      label: <WalletOutlined className="text-2xl" />,
+      key: '/wallet'
+    }
+  ];
 
   return (
     <div>
@@ -104,7 +157,7 @@ export default function Header({
                     )}
                   </div>
                   <span className="pl-2 text-base font-semibold">
-                    {network}
+                    {network.networkName}
                   </span>
                 </div>
               </div>
@@ -149,11 +202,13 @@ export default function Header({
                   </p>
                 </li>
               </Link>
-              <Link href="/create">
+              <Link href="/create/item">
                 <li className="w-full h-1/4 border-b border-black border-opacity-10 hover:shadow-md hover:cursor-pointer">
                   <p className="h-full flex flex-row items-center">
                     <PlusCircleOutlined className="m-4 text-xl" />
-                    <span className="text-md font-semibold">Create</span>
+                    <span className="text-md font-semibold">
+                      Create New Item
+                    </span>
                   </p>
                 </li>
               </Link>
@@ -250,23 +305,36 @@ export default function Header({
           </div>
         </div>
         <div className="w-20 sm:w-96 flex flex-row items-center justify-evenly sm:mr-0 text-lg font-medium">
-          <div className="hidden sm:flex">
-            <Link href="/explore">
-              <a>Explore</a>
-            </Link>
+          <div className="hidden sm:block sm:w-48 md:w-full">
+            <Menu
+              onClick={handleMenuLink}
+              selectedKeys={[current]}
+              mode="horizontal"
+              items={CreateMenu}
+              className="bg-light border-none text-lg"
+            />
           </div>
-          <div className="hidden sm:flex">
-            <Link href="/create">
-              <a>Create</a>
-            </Link>
+          <div className="flex sm:hidden flex-row items-center text-2xl">
+            {sidebar ? (
+              <CloseOutlined
+                onClick={handleOpenSidebar}
+                className="transition-all"
+              />
+            ) : (
+              <EllipsisOutlined onClick={handleOpenSidebar} />
+            )}
           </div>
-          <div
+          {/* <div
             className={`${
               isUserLoggedIn ? `text-black` : `text-grey1`
             }  hover:text-black hidden sm:flex flex-row items-center text-2xl`}
           >
             {isUserLoggedIn ? (
-              <UserOutlined />
+              <Link href="/mypage">
+                <a className="flex justify-center items-center">
+                  <UserOutlined />
+                </a>
+              </Link>
             ) : (
               <UserOutlined onClick={handleConnectWallet} />
             )}
@@ -291,7 +359,7 @@ export default function Header({
             ) : (
               <EllipsisOutlined onClick={handleOpenSidebar} />
             )}
-          </div>
+          </div> */}
         </div>
       </nav>
     </div>

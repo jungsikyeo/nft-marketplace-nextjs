@@ -20,8 +20,9 @@ interface IWindow {
 }
 
 export default function BaseLayout({ children }: AppLayoutProps) {
+  const [title, setTitle] = useState('');
   const [web3, setWeb3] = useState({});
-  const [network, setNetwork] = useState('');
+  const [network, setNetwork] = useState({});
   const [isUserLoggedIn, setIsUserLoggedIn] = useState(false);
   const [currentAccount, setCurrentAccount] = useState('');
   const [contract, setContract] = useState(null);
@@ -40,7 +41,7 @@ export default function BaseLayout({ children }: AppLayoutProps) {
       const web = new Web3(ethereum);
       setWeb3(web);
 
-      console.log(ethereum.networkVersion);
+      console.log('chianId:', ethereum.networkVersion);
 
       const networkId = ethereum.networkVersion;
       const networkName = getNetworkName(networkId);
@@ -49,7 +50,7 @@ export default function BaseLayout({ children }: AppLayoutProps) {
         message.warning('you are not connected to the ethereum testnet!');
         return;
       } else {
-        setNetwork(networkName);
+        setNetwork({ networkId, networkName });
       }
 
       const accounts = await ethereum.request({
@@ -65,16 +66,17 @@ export default function BaseLayout({ children }: AppLayoutProps) {
         const address = networkData.address;
 
         setContract(new web.eth.Contract(abi, address));
+
+        let balanceWei = await web.eth.getBalance(accounts[0]);
+        let balanceETH = await web.utils.fromWei(balanceWei, 'ether');
+        const balanceStr = String(balanceETH);
+        setbalance(balanceStr);
       } else {
         message.warning('Smart contract not deployed');
+        setContract(null);
       }
-
-      let balanceWei = await web.eth.getBalance(accounts[0]);
-      let balanceETH = await web.utils.fromWei(balanceWei, 'ether');
-      const balanceStr = String(balanceETH);
-      setbalance(balanceStr);
     } catch (e) {
-      console.log(e);
+      console.log('Error::', e);
     }
   };
 
@@ -85,7 +87,7 @@ export default function BaseLayout({ children }: AppLayoutProps) {
   const disconnectWallet = async () => {
     try {
       setWeb3({});
-      setNetwork('');
+      setNetwork({});
       setIsUserLoggedIn(false);
       setCurrentAccount('');
       setbalance('');
@@ -126,7 +128,7 @@ export default function BaseLayout({ children }: AppLayoutProps) {
   const handleNetworkChanged = (...args: any[]) => {
     const networkId = args[0];
     const networkName = getNetworkName(networkId);
-    setNetwork(networkName);
+    setNetwork({ networkId, networkName });
     getBalance(currentAccount);
     changedNetworkNoti(networkName);
     connectWallet();
@@ -143,13 +145,14 @@ export default function BaseLayout({ children }: AppLayoutProps) {
   });
 
   useEffect(() => {
-    console.log('children changed');
     setSidebar(false);
   }, [children]);
 
   return (
     <div>
       <Header
+        title={title}
+        setTitle={setTitle}
         network={network}
         isUserLoggedIn={isUserLoggedIn}
         currentAccount={currentAccount}
@@ -163,7 +166,8 @@ export default function BaseLayout({ children }: AppLayoutProps) {
       />
       {React.cloneElement(children, {
         currentAccount,
-        contract
+        contract,
+        network
       })}
     </div>
   );

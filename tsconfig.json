@@ -18,7 +18,8 @@
     "paths": {
       "@libs/*": ["src/libs/*"],
       "@components/*": ["src/components/*"],
-      "@abis/*": ["backend/abis/*"]
+      "@abis/*": ["backend/abis/*"],
+      "@db/*": ["src/libs/db/*"]
     }
   },
   "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx"],
