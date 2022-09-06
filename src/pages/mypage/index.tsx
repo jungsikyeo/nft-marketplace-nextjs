@@ -38,7 +38,6 @@ const MyPage: NextPage = ({ contract, currentAccount, network }) => {
         const NFTsTokenData: NftTokenData[] = await contract.methods
           .getNftTokens(currentAccount)
           .call();
-        //console.log('myNFTs:', NFTsTokenData);
 
         const NFTsMetadata = await Promise.all(
           NFTsTokenData.filter(res =>
@@ -49,10 +48,8 @@ const MyPage: NextPage = ({ contract, currentAccount, network }) => {
             )
           )
         );
-        //console.log('metadata:', NFTsMetadata);
 
         const NFTs: Nft[] = NFTsMetadata.map(metadata => {
-          console.log(metadata);
           const nft: Nft = {
             nftTokenId: metadata.nftTokenId,
             nftTokenURI: metadata.nftTokenURI,
@@ -65,11 +62,12 @@ const MyPage: NextPage = ({ contract, currentAccount, network }) => {
           };
           return nft;
         });
-        //console.log('myNFTs:', NFTs);
 
         setMyNFTs(NFTs.sort().reverse());
       };
       loadMyNFTs(contract);
+    } else {
+      setMyNFTs([]);
     }
   }, [contract, currentAccount, network]);
 
@@ -123,14 +121,16 @@ const MyPage: NextPage = ({ contract, currentAccount, network }) => {
                   <ul className="w-52 sm:w-full h-full flex flex-wrap">
                     {myNFTs?.map((myNft: Nft, key: number) => (
                       <Link
+                        key={`link_${key}`}
                         href={`/mypage/detail/${myNft.nftTokenId}`}
                         alt="token_id"
                       >
                         <li
-                          key={key}
+                          key={`li_${key}`}
                           className="flex flex-col shadow rounded-md w-52 h-72 mb-5 sm:mr-5"
                         >
                           <Card
+                            key={`card_${key}`}
                             hoverable
                             className="flex flex-col justify-between"
                             style={{

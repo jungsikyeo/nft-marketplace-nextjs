@@ -273,7 +273,7 @@ const CreateCollection: NextPage = ({ currentAccount, network }) => {
   };
 
   useEffect(() => {
-    if (submit) {
+    if (submit || !currentAccount) {
       setLoading(true);
     } else {
       if (logoImage && name) {
@@ -282,7 +282,7 @@ const CreateCollection: NextPage = ({ currentAccount, network }) => {
         setLoading(true);
       }
     }
-  }, [logoImage, name, submit]);
+  }, [logoImage, name, submit, currentAccount]);
 
   return (
     <div>
@@ -424,18 +424,18 @@ const CreateCollection: NextPage = ({ currentAccount, network }) => {
                 style={{ width: '100%' }}
                 onChange={handleBlockchain}
               >
-                <Option key="1" value="ethereum">
+                <Select.Option key="1" value="ethereum">
                   Ethereum
-                </Option>
-                <Option key="2" value="solana" disabled>
+                </Select.Option>
+                <Select.Option key="2" value="solana" disabled>
                   Solana
-                </Option>
-                <Option key="3" value="polygon" disabled>
+                </Select.Option>
+                <Select.Option key="3" value="polygon" disabled>
                   Polygon
-                </Option>
-                <Option key="4" value="klaytn" disabled>
+                </Select.Option>
+                <Select.Option key="4" value="klaytn" disabled>
                   Klaytn
-                </Option>
+                </Select.Option>
               </Select>
             </div>
           </section>

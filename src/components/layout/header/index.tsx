@@ -149,12 +149,10 @@ export default function Header({
               <div className="flex flex-row justify-start">
                 <div className="flex items-center">
                   <div className="flex justify-center items-center rounded-full p-0.5 border-2 text-info">
-                    {currentAccount && (
-                      <Jazzicon
-                        diameter={36}
-                        seed={jsNumberForAddress(currentAccount)}
-                      />
-                    )}
+                    <Jazzicon
+                      diameter={36}
+                      seed={jsNumberForAddress(currentAccount)}
+                    />
                   </div>
                   <span className="pl-2 text-base font-semibold">
                     {network.networkName}

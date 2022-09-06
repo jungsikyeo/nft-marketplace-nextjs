@@ -10,6 +10,7 @@ import {
 } from '@components/notification';
 import OpenPlanet from '@abis/OpenPlanet.json';
 import { message } from 'antd';
+import { useRouter } from 'next/router';
 
 type AppLayoutProps = {
   children: React.ReactNode;
@@ -29,12 +30,14 @@ export default function BaseLayout({ children }: AppLayoutProps) {
   const [balance, setbalance] = useState('');
   const [sidebar, setSidebar] = useState(false);
   const [nightMode, setNightMode] = useState(false);
+  const router = useRouter();
 
   const connectWallet = async () => {
     try {
       const ethereum: IWindow['ethereum'] = (window as any).ethereum;
       if (!ethereum) {
         console.log('Metamask not detected');
+        router.push('/');
         return;
       }
 
@@ -80,10 +83,6 @@ export default function BaseLayout({ children }: AppLayoutProps) {
     }
   };
 
-  useEffect(() => {
-    connectWallet();
-  }, []);
-
   const disconnectWallet = async () => {
     try {
       setWeb3({});
@@ -98,16 +97,21 @@ export default function BaseLayout({ children }: AppLayoutProps) {
   };
 
   const getBalance = async (account: string) => {
-    let balanceWei = await (web3 as any).eth.getBalance(account);
-    let balanceETH = await (web3 as any).utils.fromWei(balanceWei, 'ether');
-    const balanceStr = String(balanceETH);
-    setbalance(balanceStr);
+    if ((web3 as any).eth) {
+      let balanceWei = await (web3 as any).eth.getBalance(account);
+      let balanceETH = await (web3 as any).utils.fromWei(balanceWei, 'ether');
+      const balanceStr = String(balanceETH);
+      setbalance(balanceStr);
+    } else {
+      disconnectWallet();
+    }
   };
 
   const handleAccountChange = (...args: (string | any[])[]) => {
     const _account = args[0][0];
     if (args[0].length === 0) {
       loginWarningNoti();
+      disconnectWallet();
     } else if (_account !== currentAccount) {
       setCurrentAccount(_account);
       getBalance(_account);
@@ -126,6 +130,7 @@ export default function BaseLayout({ children }: AppLayoutProps) {
   });
 
   const handleNetworkChanged = (...args: any[]) => {
+    console.log(args);
     const networkId = args[0];
     const networkName = getNetworkName(networkId);
     setNetwork({ networkId, networkName });
@@ -144,9 +149,27 @@ export default function BaseLayout({ children }: AppLayoutProps) {
     };
   });
 
+  const handleDisconnect = (...args: any[]) => {
+    console.log('disconnect:', args);
+    disconnectWallet();
+  };
+
+  useEffect(() => {
+    (window as any).ethereum?.on('disconnect', handleDisconnect);
+    return () => {
+      (window as any).ethereum?.removeListener('disconnect', handleDisconnect);
+    };
+  });
+
   useEffect(() => {
     setSidebar(false);
   }, [children]);
+
+  useEffect(() => {
+    if (!isUserLoggedIn) {
+      connectWallet();
+    }
+  }, [router.route]);
 
   return (
     <div>

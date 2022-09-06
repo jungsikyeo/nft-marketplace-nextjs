@@ -158,7 +158,7 @@ const CreateItem: NextPage = ({
   }, []);
 
   useEffect(() => {
-    if (submit) {
+    if (submit || !currentAccount) {
       setLoading(true);
     } else {
       if (image && name && price) {
@@ -167,13 +167,14 @@ const CreateItem: NextPage = ({
         setLoading(true);
       }
     }
-  }, [image, name, price, submit]);
+  }, [image, name, price, submit, currentAccount]);
 
   return (
     <div>
       <div className="w-full h-full flex justify-center">
         <main className="flex flex-col items-start sm:w-1/2 md:w-2/5 w-2/3 py-11">
           <Title type="title-content" text="Create New Item" />
+          {`account:${currentAccount}`}
           <section className={sectionClass}>
             <div className={`${titleClass} ${requireClass}`}>
               Image, Video, Audio, or 3D Model
@@ -291,18 +292,18 @@ const CreateItem: NextPage = ({
                 style={{ width: '100%' }}
                 onChange={handleBlockchain}
               >
-                <Option key="1" value="ethereum">
+                <Select.Option key="1" value="ethereum">
                   Ethereum
-                </Option>
-                <Option key="2" value="solana" disabled>
+                </Select.Option>
+                <Select.Option key="2" value="solana" disabled>
                   Solana
-                </Option>
-                <Option key="3" value="polygon" disabled>
+                </Select.Option>
+                <Select.Option key="3" value="polygon" disabled>
                   Polygon
-                </Option>
-                <Option key="4" value="klaytn" disabled>
+                </Select.Option>
+                <Select.Option key="4" value="klaytn" disabled>
                   Klaytn
-                </Option>
+                </Select.Option>
               </Select>
             </div>
           </section>
@@ -325,14 +326,21 @@ const CreateItem: NextPage = ({
 export default CreateItem;
 
 export const getServerSideProps: GetServerSideProps = async ({ req, res }) => {
-  const collectionList = await prisma.collection.findMany({
-    where: {
-      account: req.account,
-      networkId: req.netrworkId
-    }
-  });
+  let collections;
+  if (req.account) {
+    const collectionList = await prisma.collection.findMany({
+      where: {
+        account: req.account,
+        networkId: req.netrworkId
+      }
+    });
 
-  const collections = collectionList.map(collection => collection.name);
+    console.log('collectionList:', collectionList);
+
+    collections = collectionList.map(collection => collection.name);
+  } else {
+    collections = [];
+  }
 
   return {
     props: { collections }
