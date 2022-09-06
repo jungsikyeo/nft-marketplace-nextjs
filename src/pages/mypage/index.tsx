@@ -1,23 +1,22 @@
 import type { NextPage } from 'next';
-import { Title } from '@components/atoms';
-import { message, Card, List, Tabs, Grid, Tag, Row, Col } from 'antd';
-import Image from 'next/image';
+import { message, Card, Tabs, Grid } from 'antd';
 import { useEffect, useState } from 'react';
 import Axios from 'axios';
 import Jazzicon, { jsNumberForAddress } from 'react-jazzicon';
 import { PaperClipOutlined } from '@ant-design/icons';
-import Link from 'next/link';
+import Items from '@components/Items';
+import Collections, { CollectionType } from '@components/collections';
+import { ICollections } from '../explore';
+import { Collection } from '@prisma/client';
 
 const { TabPane } = Tabs;
-const { useBreakpoint } = Grid;
-const { Meta } = Card;
 
-type NftTokenData = {
+type ItemTokenData = {
   nftTokenId: number;
   nftTokenURI: string;
 };
 
-type Nft = {
+type Item = {
   nftTokenId: string;
   nftTokenURI: string;
   imageURL: string;
@@ -28,14 +27,28 @@ type Nft = {
   blockchain: string;
 };
 
-const MyPage: NextPage = ({ contract, currentAccount, network }) => {
-  const [myNFTs, setMyNFTs] = useState<Nft[]>([]);
-  const handleTabs = () => {};
+type MyPageProps = {
+  contract: any;
+  currentAccount: string;
+  network: {
+    networkId: string;
+    networkName: string;
+  };
+};
+
+const MyPage: NextPage<MyPageProps> = ({
+  contract,
+  currentAccount,
+  network
+}: MyPageProps) => {
+  const [myItemList, setMyItemList] = useState<Item[]>([]);
+  const [myCollectionList, setMyCollectionList] =
+    useState<CollectionType[]>(ICollections);
 
   useEffect(() => {
     if (contract && currentAccount && network) {
-      const loadMyNFTs = async contract => {
-        const NFTsTokenData: NftTokenData[] = await contract.methods
+      const loadMyItemList = async (contract: any) => {
+        const NFTsTokenData: ItemTokenData[] = await contract.methods
           .getNftTokens(currentAccount)
           .call();
 
@@ -49,8 +62,8 @@ const MyPage: NextPage = ({ contract, currentAccount, network }) => {
           )
         );
 
-        const NFTs: Nft[] = NFTsMetadata.map(metadata => {
-          const nft: Nft = {
+        const items: Item[] = NFTsMetadata.map(metadata => {
+          const item: Item = {
             nftTokenId: metadata.nftTokenId,
             nftTokenURI: metadata.nftTokenURI,
             imageURL: `https://ipfs.io/ipfs/${metadata.image.split('//')[1]}`,
@@ -60,14 +73,65 @@ const MyPage: NextPage = ({ contract, currentAccount, network }) => {
             collection: metadata.collection,
             blockchain: metadata.blockchain
           };
-          return nft;
+          return item;
         });
 
-        setMyNFTs(NFTs.sort().reverse());
+        setMyItemList(items.sort().reverse());
       };
-      loadMyNFTs(contract);
+      loadMyItemList(contract);
+
+      const loadMyCollectionList = async () => {
+        await fetch('/api/collection/list', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            networkId: network.networkId,
+            account: currentAccount
+          })
+        })
+          .then(response => response.json().catch(() => {}))
+          .then(async data => {
+            if (data?.collections && data?.collections?.length > 0) {
+              await Promise.all(
+                data.collections
+                  .filter((res: Collection) =>
+                    res.logoImageMetadata?.startsWith('https://')
+                  )
+                  .map((res: Collection) =>
+                    Axios.get(res.logoImageMetadata).then(({ data }) => {
+                      return Object.assign(res, { logoImageUrl: data.image });
+                    })
+                  )
+              );
+
+              await Promise.all(
+                data.collections
+                  .filter((res: Collection) =>
+                    res.featuredImageMetadata?.startsWith('https://')
+                  )
+                  .map((res: any) =>
+                    Axios.get(res.featuredImageMetadata).then(({ data }) => {
+                      console.log(data.image);
+                      return Object.assign(res, {
+                        featuredImageUrl: data.image
+                      });
+                    })
+                  )
+              );
+
+              setMyCollectionList(data.collections);
+            }
+          })
+          .catch(error => {
+            console.log(error);
+          });
+      };
+      loadMyCollectionList();
     } else {
-      setMyNFTs([]);
+      setMyItemList([]);
+      setMyCollectionList([]);
     }
   }, [contract, currentAccount, network]);
 
@@ -114,52 +178,15 @@ const MyPage: NextPage = ({ contract, currentAccount, network }) => {
             <div className="w-full h-auto flex justify-center sm:block sm:justify-start">
               <Tabs
                 defaultActiveKey="1"
-                onChange={handleTabs}
                 className="w-full h-full text-base font-semibold"
               >
                 <TabPane tab="Items" key="1">
-                  <ul className="w-52 sm:w-full h-full flex flex-wrap">
-                    {myNFTs?.map((myNft: Nft, key: number) => (
-                      <Link
-                        key={`link_${key}`}
-                        href={`/mypage/detail/${myNft.nftTokenId}`}
-                        alt="token_id"
-                      >
-                        <li
-                          key={`li_${key}`}
-                          className="flex flex-col shadow rounded-md w-52 h-72 mb-5 sm:mr-5"
-                        >
-                          <Card
-                            key={`card_${key}`}
-                            hoverable
-                            className="flex flex-col justify-between"
-                            style={{
-                              width: '100%',
-                              height: '100%'
-                            }}
-                            cover={
-                              <div className="h-4/6">
-                                <img
-                                  alt={myNft.name}
-                                  width="100%"
-                                  height="100%"
-                                  style={{ overflow: 'hidden' }}
-                                  src={myNft.imageURL}
-                                />
-                              </div>
-                            }
-                          >
-                            <Meta
-                              title={myNft.name}
-                              description={myNft.collection || 'default'}
-                            />
-                          </Card>
-                        </li>
-                      </Link>
-                    ))}
-                  </ul>
+                  <Items itemList={myItemList} />
                 </TabPane>
-                <TabPane tab="Activities" key="2"></TabPane>
+                <TabPane tab="Collections" key="2">
+                  <Collections collectionList={myCollectionList} />
+                </TabPane>
+                <TabPane tab="Activities" key="3"></TabPane>
               </Tabs>
             </div>
           </div>

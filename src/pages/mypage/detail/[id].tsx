@@ -1,14 +1,11 @@
 import {
   Button,
   Card,
-  Col,
   Collapse,
   Empty,
   Image,
-  Row,
   Space,
   Table,
-  Tooltip,
   Typography,
   Input
 } from 'antd';
@@ -28,7 +25,6 @@ import { loginWarningNoti } from '@components/notification';
 import Axios from 'axios';
 import { NextPage } from 'next';
 import { useRouter } from 'next/router';
-import { Gap } from '@components/atoms';
 import Link from 'next/link';
 
 const { Panel } = Collapse;
@@ -39,23 +35,23 @@ const columns = [
     title: 'Price',
     dataIndex: 'price',
     key: 'price',
-    render: text => <>{text}</>
+    render: (text: string) => <>{text}</>
   },
   {
     title: 'Expiration',
     dataIndex: 'expiration',
     key: 'expiration',
-    render: text => <Paragraph ellipsis>{text}</Paragraph>
+    render: (text: string) => <Paragraph ellipsis>{text}</Paragraph>
   },
   {
     title: 'From',
     dataIndex: 'from',
     key: 'from',
-    render: text => <Paragraph ellipsis>{text}</Paragraph>
+    render: (text: string) => <Paragraph ellipsis>{text}</Paragraph>
   }
 ];
 
-const data = [];
+const data: any[] = [];
 
 // for (let i = 0; i < 100; i++) {
 //   data.push({
@@ -66,11 +62,15 @@ const data = [];
 //   });
 // }
 
-const onChange = key => {
-  console.log(key);
+type NftDefailType = {
+  contract: any;
+  currentAccount: string;
 };
 
-const NftDetail: NextPage = ({ contract, currentAccount, network }) => {
+const NftDetail: NextPage<NftDefailType> = ({
+  contract,
+  currentAccount
+}: NftDefailType) => {
   const router = useRouter();
   const [name, setName] = useState('');
   const [price, setPrice] = useState(0);
@@ -91,22 +91,19 @@ const NftDetail: NextPage = ({ contract, currentAccount, network }) => {
 
   const getNFTList = async () => {
     if (contract && currentAccount) {
-      console.log('GET GET START');
       const result = await contract.methods
         .getNftTokens(currentAccount)
         .call({ from: currentAccount });
 
       const metadata = await Promise.all(
         result
-          .filter(res => res.nftTokenId === router.query.id)
-          .map(res =>
+          .filter((res: any) => res.nftTokenId === router.query.id)
+          .map((res: any) =>
             Axios.get(res.nftTokenURI).then(({ data }) =>
               Object.assign(data, res)
             )
           )
       );
-
-      console.log(metadata);
 
       const correctMetadata = await metadata
         .filter(meta => meta.image)
@@ -247,8 +244,8 @@ const NftDetail: NextPage = ({ contract, currentAccount, network }) => {
                     </Space>
                     <Input
                       placeholder="e.g. 0x1ed3... or destination.eth"
-                      onChange={e => {
-                        setAddress(e.target.value);
+                      onChange={event => {
+                        setAddress(event.target.value);
                       }}
                     />
                     <span className="flex justify-center items-center text-xs font-semibold -mt-1 mb-1">{`"${name}" will be transferred to ...`}</span>
@@ -281,7 +278,6 @@ const NftDetail: NextPage = ({ contract, currentAccount, network }) => {
                 <div>
                   <Collapse
                     defaultActiveKey={['1', '2']}
-                    onChange={onChange}
                     expandIconPosition={'end'}
                     className="rounded-lg mb-5"
                   >
@@ -336,7 +332,6 @@ const NftDetail: NextPage = ({ contract, currentAccount, network }) => {
                 <div>
                   <Collapse
                     expandIconPosition={'end'}
-                    onChange={onChange}
                     className="rounded-lg mb-5"
                   >
                     <Panel
@@ -355,7 +350,6 @@ const NftDetail: NextPage = ({ contract, currentAccount, network }) => {
                   {/* Listings Box */}
                   <Collapse
                     expandIconPosition={'end'}
-                    onChange={onChange}
                     className="rounded-lg mb-5"
                   >
                     <Panel
@@ -375,7 +369,6 @@ const NftDetail: NextPage = ({ contract, currentAccount, network }) => {
                   <Collapse
                     defaultActiveKey={['1']}
                     expandIconPosition={'end'}
-                    onChange={onChange}
                     className="rounded-lg"
                   >
                     <Panel
@@ -390,7 +383,6 @@ const NftDetail: NextPage = ({ contract, currentAccount, network }) => {
                     >
                       {/* <Empty /> */}
                       <Table
-                        width="100%"
                         columns={columns}
                         dataSource={data}
                         pagination={{

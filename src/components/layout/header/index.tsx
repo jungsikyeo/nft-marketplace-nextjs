@@ -4,7 +4,7 @@ import {
   SearchOutlined,
   UserOutlined,
   WalletOutlined,
-  WalletTwoTone,
+  FileAddOutlined,
   CloseOutlined,
   EllipsisOutlined,
   EyeOutlined,
@@ -51,8 +51,8 @@ export default function Header({
   nightMode,
   setSidebar,
   setNightMode,
-  connectWallet,
-  disconnectWallet
+  disconnectWallet,
+  connectWallet
 }: HeaderProps) {
   const router = useRouter();
   const [current, setCurrent] = useState('/');
@@ -68,12 +68,6 @@ export default function Header({
       setTitle('Home');
     }
   }, [router.route]);
-
-  const handleConnectWallet = async () => {
-    if (!isUserLoggedIn) {
-      connectWallet();
-    }
-  };
 
   const handleOpenSidebar = async () => {
     if (sidebar) {
@@ -93,13 +87,23 @@ export default function Header({
 
   const handleMenuLink: MenuProps['onClick'] = e => {
     setCurrent(e.key);
-    if (e.key === '/user') {
-      handleConnectWallet();
-    } else if (e.key === '/wallet') {
+    if (e.key === '/wallet') {
       setSidebar(!sidebar);
-      handleConnectWallet();
-    } else {
+      return;
+    }
+    if (e.key === '/' || e.key === '/explore') {
       router.push(e.key);
+      return;
+    }
+
+    if (isUserLoggedIn) {
+      if (e.key === '/user') {
+        connectWallet();
+      } else {
+        router.push(e.key);
+      }
+    } else {
+      router.push('/login');
     }
   };
   const CreateMenu: MenuProps['items'] = [
@@ -117,7 +121,7 @@ export default function Header({
         },
         {
           label: 'New Item',
-          key: '/create/item'
+          key: `/create/item/${network.networkId}/${currentAccount}`
         }
       ]
     },
@@ -191,7 +195,7 @@ export default function Header({
             </div>
           </div>
           <div className="flex items-start justify-center w-full h-96">
-            <ul className="flex flex-col items-center justify-evenly w-80 h-60 mt-4 mb-8 border border-black border-opacity-10 rounded-xl">
+            <ul className="flex flex-col items-center justify-evenly w-80 h-80 mt-4 mb-8 border border-black border-opacity-10 rounded-xl">
               <Link href="/explore">
                 <li className="w-full h-1/4 border-b border-black border-opacity-10 hover:shadow-md hover:cursor-pointer">
                   <p className="h-full flex flex-row items-center">
@@ -200,7 +204,23 @@ export default function Header({
                   </p>
                 </li>
               </Link>
-              <Link href="/create/item">
+              <Link href={isUserLoggedIn ? `/create/collection` : `/login`}>
+                <li className="w-full h-1/4 border-b border-black border-opacity-10 hover:shadow-md hover:cursor-pointer">
+                  <p className="h-full flex flex-row items-center">
+                    <FileAddOutlined className="m-4 text-xl" />
+                    <span className="text-md font-semibold">
+                      Create New Collection
+                    </span>
+                  </p>
+                </li>
+              </Link>
+              <Link
+                href={
+                  isUserLoggedIn
+                    ? `/create/item/${network.networkId}/${currentAccount}`
+                    : `/login`
+                }
+              >
                 <li className="w-full h-1/4 border-b border-black border-opacity-10 hover:shadow-md hover:cursor-pointer">
                   <p className="h-full flex flex-row items-center">
                     <PlusCircleOutlined className="m-4 text-xl" />
@@ -225,7 +245,7 @@ export default function Header({
               <li
                 className="w-full h-1/4 hover:shadow-md hover:rounded-b-xl hover:cursor-pointer"
                 onClick={
-                  isUserLoggedIn ? handleDisconnectWallet : handleConnectWallet
+                  isUserLoggedIn ? handleDisconnectWallet : connectWallet
                 }
               >
                 <p className="h-full flex flex-row items-center">
@@ -245,7 +265,7 @@ export default function Header({
       </div>
       <nav className="w-full h-16 flex flex-row justify-between shadow-md bg-light z-50">
         <div className="w-full sm:w-4/6 h-full flex flex-row justify-between text-center align-middle">
-          <div className="flex flex-row">
+          <div className="flex flex-row ml-5">
             <Link href="/">
               <a className="flex items-center mx-1">
                 <svg
@@ -322,42 +342,6 @@ export default function Header({
               <EllipsisOutlined onClick={handleOpenSidebar} />
             )}
           </div>
-          {/* <div
-            className={`${
-              isUserLoggedIn ? `text-black` : `text-grey1`
-            }  hover:text-black hidden sm:flex flex-row items-center text-2xl`}
-          >
-            {isUserLoggedIn ? (
-              <Link href="/mypage">
-                <a className="flex justify-center items-center">
-                  <UserOutlined />
-                </a>
-              </Link>
-            ) : (
-              <UserOutlined onClick={handleConnectWallet} />
-            )}
-          </div>
-          <div
-            className={`${
-              isUserLoggedIn ? `text-black` : `text-grey1`
-            }  hover:text-black hidden sm:flex flex-row items-center text-2xl`}
-          >
-            {sidebar ? (
-              <WalletTwoTone onClick={handleOpenSidebar} />
-            ) : (
-              <WalletOutlined onClick={handleOpenSidebar} />
-            )}
-          </div>
-          <div className="flex sm:hidden flex-row items-center text-2xl">
-            {sidebar ? (
-              <CloseOutlined
-                onClick={handleOpenSidebar}
-                className="transition-all"
-              />
-            ) : (
-              <EllipsisOutlined onClick={handleOpenSidebar} />
-            )}
-          </div> */}
         </div>
       </nav>
     </div>

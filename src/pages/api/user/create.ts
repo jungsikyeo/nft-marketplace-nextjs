@@ -1,21 +1,21 @@
 import client from '@libs/client/client';
 import withHandler from '@libs/server/withHandler';
-import { Axios } from 'axios';
 import type { NextApiRequest, NextApiResponse } from 'next';
 
 async function handler(req: NextApiRequest, res: NextApiResponse) {
-  const collections = await client.collection.findMany({
+  let user = await client.user.findFirst({
     where: {
       networkId: req.body.networkId,
       account: req.body.account
     }
   });
 
-  console.log(collections);
-
+  if (!user) {
+    user = await client.user.create({ data: req.body });
+  }
   return res.json({
     ok: true,
-    collections
+    user
   });
 }
 

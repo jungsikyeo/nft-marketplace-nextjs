@@ -1,9 +1,20 @@
 import { message } from 'antd';
+import { RcFile } from 'antd/lib/upload';
 import { NFTStorage } from 'nft.storage';
 
 export function cls(...classnames: string[]) {
   return classnames.join(' ');
 }
+
+export const getBase64 = (file: RcFile | undefined) =>
+  new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    if (file) {
+      reader.readAsDataURL(file);
+      reader.onload = () => resolve(reader.result);
+      reader.onerror = error => reject(error);
+    }
+  });
 
 export const beforeUpload = (fileType: string, fileSize: number) => {
   const isJpgOrPng =

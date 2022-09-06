@@ -6,21 +6,26 @@ import { File } from 'nft.storage';
 import { PlusOutlined } from '@ant-design/icons';
 import {
   beforeUpload,
-  cls,
   extractMetadataUrl,
+  getBase64,
   uploadStore
 } from '@libs/client/utils';
-import { RcFile } from 'antd/lib/upload';
+import { UploadChangeParam, UploadFile } from 'antd/lib/upload';
 import { useRouter } from 'next/router';
-import { Option } from 'antd/lib/mentions';
 import { PrismaClient } from '@prisma/client';
-import { ethers } from 'ethers';
+import Login from 'src/pages/login';
 
 const prisma = new PrismaClient();
 
+const requireClass = `after:content-['*'] after:ml-1 after:text-danger after:font-semibold`;
+const sectionClass = `flex flex-col justify-start w-full mb-8`;
+const titleClass = `text-sm font-bold mb-2`;
+const messageClass = `text-xs font-semibold opacity-40 mb-2`;
+
 type Nft = {
-  image: File;
+  image: File | null;
   name: string;
+  price: number;
   description?: string;
   external_link?: string;
   supply: number;
@@ -28,27 +33,21 @@ type Nft = {
   blockchain: string;
 };
 
-const requireClass = `after:content-['*'] after:ml-1 after:text-danger after:font-semibold`;
-const sectionClass = `flex flex-col justify-start w-full mb-8`;
-const titleClass = `text-sm font-bold mb-2`;
-const messageClass = `text-xs font-semibold opacity-40 mb-2`;
+type CreateItemType = {
+  isUserLoggedIn: boolean;
+  currentAccount: string;
+  contract: any;
+  collections: string[];
+  connectWallet: any;
+};
 
-const getBase64 = (file: RcFile) =>
-  new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.readAsDataURL(file);
-
-    reader.onload = () => resolve(reader.result);
-
-    reader.onerror = error => reject(error);
-  });
-
-const CreateItem: NextPage = ({
+const CreateItem: NextPage<CreateItemType> = ({
+  isUserLoggedIn,
   currentAccount,
-  network,
   contract,
-  collections
-}) => {
+  collections,
+  connectWallet
+}: CreateItemType) => {
   const [loading, setLoading] = useState(true);
   const [submit, setSubmit] = useState(false);
   const [image, setImage] = useState(null);
@@ -70,19 +69,32 @@ const CreateItem: NextPage = ({
     setImage(null);
   };
 
-  const handlePreview = async (file: RcFile) => {
-    if (!file.url && !file.preview) {
-      file.preview = await getBase64(file.originFileObj);
+  const handlePreview = async (file: UploadFile<any>) => {
+    let fileName: string,
+      fileUrl: string,
+      filePreview: string,
+      fileTitle: string;
+
+    fileName = file.name || '';
+    fileUrl = file.url || '';
+    filePreview = file.preview || '';
+    if (!fileUrl && !filePreview) {
+      const temp: String | unknown = await getBase64(file.originFileObj);
+      filePreview = typeof temp !== 'string' ? '' : temp;
     }
 
-    setPreviewImage(file.url || file.preview);
+    fileTitle = fileName || fileUrl?.substring(fileUrl.lastIndexOf('/') + 1);
+
+    setPreviewImage(fileUrl || filePreview);
     setPreviewVisible(true);
     setPreviewTitle(
-      file.name || file.url.substring(file.url.lastIndexOf('/') + 1)
+      fileName || fileUrl.substring(fileUrl.lastIndexOf('/') + 1)
     );
   };
 
-  const handleChange = ({ fileList: newFileList }: RcFile[]) => {
+  const handleChange = ({
+    fileList: newFileList
+  }: UploadChangeParam<UploadFile<any>> | any) => {
     if (newFileList.length === 0) {
       handleCancel();
       setFileList(newFileList);
@@ -135,8 +147,6 @@ const CreateItem: NextPage = ({
       blockchain
     };
 
-    console.log(nft);
-
     if (!loading) {
       const metadata = await uploadStore(nft);
       contract.methods
@@ -169,12 +179,11 @@ const CreateItem: NextPage = ({
     }
   }, [image, name, price, submit, currentAccount]);
 
-  return (
+  return isUserLoggedIn ? (
     <div>
       <div className="w-full h-full flex justify-center">
         <main className="flex flex-col items-start sm:w-1/2 md:w-2/5 w-2/3 py-11">
           <Title type="title-content" text="Create New Item" />
-          {`account:${currentAccount}`}
           <section className={sectionClass}>
             <div className={`${titleClass} ${requireClass}`}>
               Image, Video, Audio, or 3D Model
@@ -214,7 +223,7 @@ const CreateItem: NextPage = ({
               <InputNumber
                 onChange={handlePrice}
                 placeholder="Item Price"
-                min="1"
+                min={1}
                 step="0,00001"
                 addonAfter="ETH"
                 stringMode
@@ -224,7 +233,7 @@ const CreateItem: NextPage = ({
           <section className={sectionClass}>
             <div className={titleClass}>External link</div>
             <div className={messageClass}>
-              OpenPlanet will include a link to this URL on this item's detail
+              OpenPlanet will include a link to this URL on this item`s detail
               page, so that users can click to learn more about it. You are
               welcome to link to your own webpage with more details.
             </div>
@@ -238,7 +247,7 @@ const CreateItem: NextPage = ({
           <section className={sectionClass}>
             <div className={titleClass}>Description</div>
             <div className={messageClass}>
-              The description will be included on the item's detail page
+              The description will be included on the item`s detail page
               underneath its image. Markdown syntax is supported.
             </div>
             <div>
@@ -258,14 +267,14 @@ const CreateItem: NextPage = ({
               <Select
                 style={{ width: '100%' }}
                 placeholder="Select collection"
-                defaultValue={collections && collections[0]}
+                defaultValue={collections[0]}
                 onChange={handleCollection}
               >
                 {collections &&
-                  collections.map((name: any, key: string) => (
-                    <Option key={key} value={name}>
+                  collections.map((name: any, key: number) => (
+                    <Select.Option key={`collection_${key}`} value={name}>
                       {name}
-                    </Option>
+                    </Select.Option>
                   ))}
               </Select>
             </div>
@@ -292,23 +301,23 @@ const CreateItem: NextPage = ({
                 style={{ width: '100%' }}
                 onChange={handleBlockchain}
               >
-                <Select.Option key="1" value="ethereum">
+                <Select.Option key="blockchain_1" value="ethereum">
                   Ethereum
                 </Select.Option>
-                <Select.Option key="2" value="solana" disabled>
+                <Select.Option key="blockchain_2" value="solana" disabled>
                   Solana
                 </Select.Option>
-                <Select.Option key="3" value="polygon" disabled>
+                <Select.Option key="blockchain_3" value="polygon" disabled>
                   Polygon
                 </Select.Option>
-                <Select.Option key="4" value="klaytn" disabled>
+                <Select.Option key="blockchain_4" value="klaytn" disabled>
                   Klaytn
                 </Select.Option>
               </Select>
             </div>
           </section>
           <Divider />
-          <section className={cls([...sectionClass, 'mb-10'])}>
+          <section className={`${sectionClass} mb-10`}>
             <Button
               type="primary"
               className="w-24 h-12"
@@ -320,27 +329,41 @@ const CreateItem: NextPage = ({
         </main>
       </div>
     </div>
+  ) : (
+    <Login connectWallet={connectWallet} />
   );
 };
 
 export default CreateItem;
 
-export const getServerSideProps: GetServerSideProps = async ({ req, res }) => {
-  let collections;
-  if (req.account) {
-    const collectionList = await prisma.collection.findMany({
-      where: {
-        account: req.account,
-        networkId: req.netrworkId
+export const getServerSideProps: GetServerSideProps = async ({ query }) => {
+  const networkId: string = query && query.params ? query.params[0] : '';
+  const account: string = query && query.params ? query.params[1] : '';
+  const user = await prisma.user.findFirst({
+    where: {
+      networkId,
+      account
+    }
+  });
+
+  if (user?.account !== account || user?.networkId !== networkId) {
+    console.log('Incorrect Access!!');
+    return {
+      redirect: {
+        permanent: false,
+        destination: '/404'
       }
-    });
-
-    console.log('collectionList:', collectionList);
-
-    collections = collectionList.map(collection => collection.name);
-  } else {
-    collections = [];
+    };
   }
+
+  let collections: string[];
+  const collectionList = await prisma.collection.findMany({
+    where: {
+      networkId,
+      account
+    }
+  });
+  collections = collectionList.map(collection => collection.name);
 
   return {
     props: { collections }

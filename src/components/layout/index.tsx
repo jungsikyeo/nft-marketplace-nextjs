@@ -13,7 +13,7 @@ import { message } from 'antd';
 import { useRouter } from 'next/router';
 
 type AppLayoutProps = {
-  children: React.ReactNode;
+  children: React.ReactNode | any;
 };
 
 interface IWindow {
@@ -23,7 +23,10 @@ interface IWindow {
 export default function BaseLayout({ children }: AppLayoutProps) {
   const [title, setTitle] = useState('');
   const [web3, setWeb3] = useState({});
-  const [network, setNetwork] = useState({});
+  const [network, setNetwork] = useState({
+    networkId: '',
+    networkName: ''
+  });
   const [isUserLoggedIn, setIsUserLoggedIn] = useState(false);
   const [currentAccount, setCurrentAccount] = useState('');
   const [contract, setContract] = useState(null);
@@ -37,7 +40,7 @@ export default function BaseLayout({ children }: AppLayoutProps) {
       const ethereum: IWindow['ethereum'] = (window as any).ethereum;
       if (!ethereum) {
         console.log('Metamask not detected');
-        router.push('/');
+        router.push('/login');
         return;
       }
 
@@ -59,24 +62,56 @@ export default function BaseLayout({ children }: AppLayoutProps) {
       const accounts = await ethereum.request({
         method: 'eth_requestAccounts'
       });
-      console.log('Found account', accounts[0]);
-      setIsUserLoggedIn(true);
-      setCurrentAccount(accounts[0]);
+      if (accounts.length > 0) {
+        console.log('Found account', accounts[0]);
+        setIsUserLoggedIn(true);
+        localStorage.setItem('isUserLoggedIn', 'true');
+        setCurrentAccount(accounts[0]);
 
-      const networkData = OpenPlanet.networks[networkId];
-      if (networkData) {
-        const abi = OpenPlanet.abi;
-        const address = networkData.address;
+        const newNetworks: any = OpenPlanet.networks;
+        const networkData: any = newNetworks[networkId];
+        if (networkData) {
+          const abi: any = OpenPlanet.abi;
+          const address: string = networkData.address;
+          const newContract: any = new web.eth.Contract(abi, address);
+          setContract(newContract);
 
-        setContract(new web.eth.Contract(abi, address));
+          let balanceWei = await web.eth.getBalance(accounts[0]);
+          let balanceETH = await web.utils.fromWei(balanceWei, 'ether');
+          const balanceStr = String(balanceETH);
+          setbalance(balanceStr);
 
-        let balanceWei = await web.eth.getBalance(accounts[0]);
-        let balanceETH = await web.utils.fromWei(balanceWei, 'ether');
-        const balanceStr = String(balanceETH);
-        setbalance(balanceStr);
+          await fetch('/api/user/create', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+              networkId: networkId,
+              account: accounts[0]
+            })
+          })
+            .then(response => response.json().catch(() => {}))
+            .then(data => {
+              console.log(data);
+            })
+            .catch(error => {
+              message.error('create user error!');
+              console.log(error);
+              router.push('/login');
+            })
+            .finally(() => {
+              if (router.route === '/login') {
+                router.push('/mypage');
+              }
+            });
+        } else {
+          message.warning('Smart contract not deployed');
+          setContract(null);
+          router.push('/');
+        }
       } else {
-        message.warning('Smart contract not deployed');
-        setContract(null);
+        router.push('/login');
       }
     } catch (e) {
       console.log('Error::', e);
@@ -85,12 +120,14 @@ export default function BaseLayout({ children }: AppLayoutProps) {
 
   const disconnectWallet = async () => {
     try {
-      setWeb3({});
-      setNetwork({});
-      setIsUserLoggedIn(false);
-      setCurrentAccount('');
-      setbalance('');
-      logOutSuccessNoti();
+      await setWeb3({});
+      await setNetwork({ networkId: '', networkName: '' });
+      await setIsUserLoggedIn(false);
+      await localStorage.setItem('isUserLoggedIn', 'false');
+      await setCurrentAccount('');
+      await setbalance('');
+      await logOutSuccessNoti();
+      await router.push('/login');
     } catch (e) {
       console.log(e);
     }
@@ -107,15 +144,27 @@ export default function BaseLayout({ children }: AppLayoutProps) {
     }
   };
 
-  const handleAccountChange = (...args: (string | any[])[]) => {
+  const handleAccountChange = async (...args: (string | any[])[]) => {
     const _account = args[0][0];
     if (args[0].length === 0) {
       loginWarningNoti();
       disconnectWallet();
     } else if (_account !== currentAccount) {
-      setCurrentAccount(_account);
-      getBalance(_account);
-      changedAccountNoti(_account);
+      await setCurrentAccount(_account);
+      await getBalance(_account);
+      await changedAccountNoti(_account);
+
+      if (router.route === '/login' || router.route === '/mypage') {
+        await router.push('/mypage');
+      } else if (
+        router.route.startsWith('/create/item/') &&
+        router.route.replace('/create/item/', '') !== _account
+      ) {
+        (window as any).location =
+          await `/create/item/${network.networkId}/${_account}`;
+      } else {
+        await router.push(router.route);
+      }
     }
   };
 
@@ -136,7 +185,7 @@ export default function BaseLayout({ children }: AppLayoutProps) {
     setNetwork({ networkId, networkName });
     getBalance(currentAccount);
     changedNetworkNoti(networkName);
-    connectWallet();
+    // connectWallet();
   };
 
   useEffect(() => {
@@ -166,10 +215,12 @@ export default function BaseLayout({ children }: AppLayoutProps) {
   }, [children]);
 
   useEffect(() => {
-    if (!isUserLoggedIn) {
+    const storageIsLogin =
+      localStorage.getItem('isUserLoggedIn') === 'true' ? true : false;
+    if (storageIsLogin && !isUserLoggedIn) {
       connectWallet();
     }
-  }, [router.route]);
+  }, []);
 
   return (
     <div>
@@ -179,18 +230,20 @@ export default function BaseLayout({ children }: AppLayoutProps) {
         network={network}
         isUserLoggedIn={isUserLoggedIn}
         currentAccount={currentAccount}
+        connectWallet={connectWallet}
         balance={balance}
         sidebar={sidebar}
         nightMode={nightMode}
-        connectWallet={connectWallet}
         disconnectWallet={disconnectWallet}
         setNightMode={setNightMode}
         setSidebar={setSidebar}
       />
       {React.cloneElement(children, {
+        isUserLoggedIn,
         currentAccount,
         contract,
-        network
+        network,
+        connectWallet
       })}
     </div>
   );
