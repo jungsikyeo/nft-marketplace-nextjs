@@ -3,12 +3,9 @@ import Image from 'next/image';
 import { useState } from 'react';
 import matamask from '/public/metamask-icon.png';
 import { Spin } from 'antd';
+import { LoginPropsType } from '@libs/client/client';
 
-type LoginType = {
-  connectWallet: any;
-};
-
-const Login: NextPage<LoginType> = ({ connectWallet }: LoginType) => {
+const Login: NextPage<LoginPropsType> = ({ connectWallet }: LoginPropsType) => {
   const [loading, setLoading] = useState(false);
 
   const handleMetamask = async () => {

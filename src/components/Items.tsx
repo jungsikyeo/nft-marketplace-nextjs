@@ -1,23 +1,13 @@
+import { ItemType } from '@libs/client/client';
 import { Card } from 'antd';
 import Meta from 'antd/lib/card/Meta';
 import { NextPage } from 'next';
 import Link from 'next/link';
 
-type NftType = {
-  nftTokenId: string;
-  nftTokenURI: string;
-  imageURL: string;
-  name: string;
-  description?: string;
-  supply: number;
-  collection?: string;
-  blockchain: string;
-};
-
-const Items: NextPage<NftType[]> = ({ itemList }: NftType[] | any) => {
+const Items: NextPage<ItemType[]> = ({ itemList }: ItemType[] | any) => {
   return (
     <ul className="w-52 sm:w-full h-full flex flex-wrap">
-      {itemList?.map((myNft: NftType, key: number) => (
+      {itemList?.map((myNft: ItemType, key: number) => (
         <Link key={`link_${key}`} href={`/mypage/detail/${myNft.nftTokenId}`}>
           <li
             key={`li_${key}`}

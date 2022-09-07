@@ -17,28 +17,7 @@ import Jazzicon, { jsNumberForAddress } from 'react-jazzicon';
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
-
-interface HeaderProps {
-  title: string;
-  setTitle: any;
-  network: {
-    networkId: string;
-    networkName: string;
-  };
-  isUserLoggedIn: boolean;
-  currentAccount: string;
-  balance: string;
-  sidebar: boolean;
-  nightMode: boolean;
-  setSidebar: any;
-  setNightMode: any;
-  connectWallet: any;
-  disconnectWallet: any;
-}
-
-interface IWindow {
-  ethereum: any;
-}
+import { HeaderProps } from '@libs/client/client';
 
 export default function Header({
   title,

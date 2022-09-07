@@ -26,6 +26,7 @@ import Axios from 'axios';
 import { NextPage } from 'next';
 import { useRouter } from 'next/router';
 import Link from 'next/link';
+import { ItemDefailType } from '@libs/client/client';
 
 const { Panel } = Collapse;
 const { Title, Text, Paragraph } = Typography;
@@ -62,15 +63,10 @@ const data: any[] = [];
 //   });
 // }
 
-type NftDefailType = {
-  contract: any;
-  currentAccount: string;
-};
-
-const NftDetail: NextPage<NftDefailType> = ({
+const NftDetail: NextPage<ItemDefailType> = ({
   contract,
   currentAccount
-}: NftDefailType) => {
+}: ItemDefailType) => {
   const router = useRouter();
   const [name, setName] = useState('');
   const [price, setPrice] = useState(0);

@@ -1,6 +1,5 @@
-import client from '@libs/client/client';
+import client from '@libs/client/prisma';
 import withHandler from '@libs/server/withHandler';
-import { Axios } from 'axios';
 import type { NextApiRequest, NextApiResponse } from 'next';
 
 async function handler(req: NextApiRequest, res: NextApiResponse) {
@@ -10,8 +9,6 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
       account: req.body.account
     }
   });
-
-  console.log(collections);
 
   return res.json({
     ok: true,

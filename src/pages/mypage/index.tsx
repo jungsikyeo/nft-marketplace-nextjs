@@ -1,54 +1,35 @@
 import type { NextPage } from 'next';
-import { message, Card, Tabs, Grid } from 'antd';
+import { message, Tabs } from 'antd';
 import { useEffect, useState } from 'react';
 import Axios from 'axios';
 import Jazzicon, { jsNumberForAddress } from 'react-jazzicon';
 import { PaperClipOutlined } from '@ant-design/icons';
 import Items from '@components/Items';
-import Collections, { CollectionType } from '@components/collections';
-import { ICollections } from '../explore';
-import { Collection } from '@prisma/client';
+import Collections from '@components/collections';
+
+import {
+  CollectionType,
+  ICollections,
+  ItemTokenDataType,
+  ItemType,
+  MyPagePropsType
+} from '@libs/client/client';
 
 const { TabPane } = Tabs;
 
-type ItemTokenData = {
-  nftTokenId: number;
-  nftTokenURI: string;
-};
-
-type Item = {
-  nftTokenId: string;
-  nftTokenURI: string;
-  imageURL: string;
-  name: string;
-  description?: string;
-  supply: number;
-  collection?: string;
-  blockchain: string;
-};
-
-type MyPageProps = {
-  contract: any;
-  currentAccount: string;
-  network: {
-    networkId: string;
-    networkName: string;
-  };
-};
-
-const MyPage: NextPage<MyPageProps> = ({
+const MyPage: NextPage<MyPagePropsType> = ({
   contract,
   currentAccount,
   network
-}: MyPageProps) => {
-  const [myItemList, setMyItemList] = useState<Item[]>([]);
+}: MyPagePropsType) => {
+  const [myItemList, setMyItemList] = useState<ItemType[]>([]);
   const [myCollectionList, setMyCollectionList] =
     useState<CollectionType[]>(ICollections);
 
   useEffect(() => {
     if (contract && currentAccount && network) {
       const loadMyItemList = async (contract: any) => {
-        const NFTsTokenData: ItemTokenData[] = await contract.methods
+        const NFTsTokenData: ItemTokenDataType[] = await contract.methods
           .getNftTokens(currentAccount)
           .call();
 
@@ -62,8 +43,8 @@ const MyPage: NextPage<MyPageProps> = ({
           )
         );
 
-        const items: Item[] = NFTsMetadata.map(metadata => {
-          const item: Item = {
+        const items: ItemType[] = NFTsMetadata.map(metadata => {
+          const item: ItemType = {
             nftTokenId: metadata.nftTokenId,
             nftTokenURI: metadata.nftTokenURI,
             imageURL: `https://ipfs.io/ipfs/${metadata.image.split('//')[1]}`,
@@ -96,10 +77,10 @@ const MyPage: NextPage<MyPageProps> = ({
             if (data?.collections && data?.collections?.length > 0) {
               await Promise.all(
                 data.collections
-                  .filter((res: Collection) =>
+                  .filter((res: CollectionType[]) =>
                     res.logoImageMetadata?.startsWith('https://')
                   )
-                  .map((res: Collection) =>
+                  .map((res: CollectionType[]) =>
                     Axios.get(res.logoImageMetadata).then(({ data }) => {
                       return Object.assign(res, { logoImageUrl: data.image });
                     })
@@ -108,7 +89,7 @@ const MyPage: NextPage<MyPageProps> = ({
 
               await Promise.all(
                 data.collections
-                  .filter((res: Collection) =>
+                  .filter((res: CollectionType[]) =>
                     res.featuredImageMetadata?.startsWith('https://')
                   )
                   .map((res: any) =>

@@ -11,16 +11,9 @@ import {
 import OpenPlanet from '@abis/OpenPlanet.json';
 import { message } from 'antd';
 import { useRouter } from 'next/router';
+import { AppLayoutPropsType, IWindow } from '@libs/client/client';
 
-type AppLayoutProps = {
-  children: React.ReactNode | any;
-};
-
-interface IWindow {
-  ethereum: any;
-}
-
-export default function BaseLayout({ children }: AppLayoutProps) {
+export default function BaseLayout({ children }: AppLayoutPropsType) {
   const [title, setTitle] = useState('');
   const [web3, setWeb3] = useState({});
   const [network, setNetwork] = useState({

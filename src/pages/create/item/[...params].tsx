@@ -12,8 +12,9 @@ import {
 } from '@libs/client/utils';
 import { UploadChangeParam, UploadFile } from 'antd/lib/upload';
 import { useRouter } from 'next/router';
-import { PrismaClient } from '@prisma/client';
 import Login from 'src/pages/login';
+import { CreateItemType, ItemType } from '@libs/client/client';
+import { PrismaClient } from '@prisma/client';
 
 const prisma = new PrismaClient();
 
@@ -21,25 +22,6 @@ const requireClass = `after:content-['*'] after:ml-1 after:text-danger after:fon
 const sectionClass = `flex flex-col justify-start w-full mb-8`;
 const titleClass = `text-sm font-bold mb-2`;
 const messageClass = `text-xs font-semibold opacity-40 mb-2`;
-
-type Nft = {
-  image: File | null;
-  name: string;
-  price: number;
-  description?: string;
-  external_link?: string;
-  supply: number;
-  collection?: string;
-  blockchain: string;
-};
-
-type CreateItemType = {
-  isUserLoggedIn: boolean;
-  currentAccount: string;
-  contract: any;
-  collections: string[];
-  connectWallet: any;
-};
 
 const CreateItem: NextPage<CreateItemType> = ({
   isUserLoggedIn,
@@ -136,7 +118,7 @@ const CreateItem: NextPage<CreateItemType> = ({
   const handleCreate = async () => {
     setSubmit(true);
 
-    const nft: Nft = {
+    const item: ItemType = {
       image,
       name,
       price,
@@ -148,7 +130,7 @@ const CreateItem: NextPage<CreateItemType> = ({
     };
 
     if (!loading) {
-      const metadata = await uploadStore(nft);
+      const metadata = await uploadStore(item);
       contract.methods
         .mintNFT(currentAccount, extractMetadataUrl(metadata))
         .send({

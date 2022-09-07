@@ -1,32 +1,21 @@
 import type { NextPage } from 'next';
 import { Typography, Tabs, Card } from 'antd';
 import { useEffect, useState } from 'react';
-import { Collection } from '@prisma/client';
 import Axios from 'axios';
-import Collections, { CollectionType } from '@components/collections';
+import Collections from '@components/collections';
+import {
+  CollectionType,
+  ExplorePropsType,
+  ICollections
+} from '@libs/client/client';
 
 const { TabPane } = Tabs;
 const { Title } = Typography;
 
-type ExploreProps = {
-  network: {
-    networkId: string;
-  };
-  currentAccount: string;
-};
-
-export const ICollections: CollectionType[] = [
-  {
-    name: '',
-    logoImageUrl: '',
-    featuredImageUrl: ''
-  }
-];
-
-const Explore: NextPage<ExploreProps> = ({
+const Explore: NextPage<ExplorePropsType> = ({
   network,
   currentAccount
-}: ExploreProps) => {
+}: ExplorePropsType) => {
   const [allList, setAllList] = useState<CollectionType[]>(ICollections);
   const [myList, setMyList] = useState<CollectionType[]>(ICollections);
 
@@ -47,10 +36,10 @@ const Explore: NextPage<ExploreProps> = ({
             if (data?.collections && data?.collections?.length > 0) {
               await Promise.all(
                 data.collections
-                  .filter((res: Collection) =>
+                  .filter((res: CollectionType[]) =>
                     res.logoImageMetadata?.startsWith('https://')
                   )
-                  .map((res: Collection) =>
+                  .map((res: CollectionType[]) =>
                     Axios.get(res.logoImageMetadata).then(({ data }) => {
                       return Object.assign(res, { logoImageUrl: data.image });
                     })
@@ -59,7 +48,7 @@ const Explore: NextPage<ExploreProps> = ({
 
               await Promise.all(
                 data.collections
-                  .filter((res: Collection) =>
+                  .filter((res: CollectionType[]) =>
                     res.featuredImageMetadata?.startsWith('https://')
                   )
                   .map((res: any) =>

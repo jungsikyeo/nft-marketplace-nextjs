@@ -13,23 +13,14 @@ import {
 import { PlusOutlined } from '@ant-design/icons';
 import {
   beforeUpload,
-  cls,
   extractMetadataUrl,
   getBase64,
   uploadStore
 } from '@libs/client/utils';
-import { RcFile, UploadChangeParam, UploadFile } from 'antd/lib/upload';
+import { UploadChangeParam, UploadFile } from 'antd/lib/upload';
 import { useRouter } from 'next/router';
 import Login from 'src/pages/login';
-
-type Collection = {
-  account: string;
-  networkId: string;
-  name: string;
-  slug: string;
-  description: string;
-  blockchain: string;
-};
+import { CollectionType, CreateCollectionType } from '@libs/client/client';
 
 const { Title } = Typography;
 const requireClass: string = `after:content-['*'] after:ml-1 after:text-danger after:font-semibold`;
@@ -38,16 +29,6 @@ const titleClass: string = `text-sm font-bold mb-2`;
 const messageClass: string = `text-xs font-semibold opacity-40 mb-2`;
 
 const SERVER_URL: string = process.env.NEXT_PUBLIC_SERVER_URL || '';
-
-type CreateCollectionType = {
-  isUserLoggedIn: boolean;
-  currentAccount: string;
-  network: {
-    networkId: string;
-    networkName: string;
-  };
-  connectWallet: any;
-};
 
 const CreateCollection: NextPage<CreateCollectionType> = ({
   isUserLoggedIn,
@@ -218,7 +199,7 @@ const CreateCollection: NextPage<CreateCollectionType> = ({
   const handleCreate = async () => {
     setSubmit(true);
 
-    const collection: Collection = {
+    const collection: CollectionType = {
       account: currentAccount,
       networkId: network.networkId,
       name,

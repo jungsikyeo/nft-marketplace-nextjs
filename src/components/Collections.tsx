@@ -1,13 +1,8 @@
+import { CollectionType } from '@libs/client/client';
 import { Card } from 'antd';
 import Meta from 'antd/lib/card/Meta';
 import { NextPage } from 'next';
 import Link from 'next/link';
-
-export type CollectionType = {
-  name: string;
-  logoImageUrl: string;
-  featuredImageUrl?: string;
-};
 
 const Collections: NextPage<CollectionType[]> = ({
   collectionList

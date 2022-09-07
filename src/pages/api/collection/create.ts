@@ -1,4 +1,4 @@
-import client from '@libs/client/client';
+import client from '@libs/client/prisma';
 import withHandler from '@libs/server/withHandler';
 import type { NextApiRequest, NextApiResponse } from 'next';
 
