@@ -4,7 +4,7 @@ import Meta from 'antd/lib/card/Meta';
 import { NextPage } from 'next';
 import Link from 'next/link';
 
-const Collections: NextPage<CollectionType[]> = ({
+const Collections: CollectionType[] | any = ({
   collectionList
 }: CollectionType[] | any) => {
   return (

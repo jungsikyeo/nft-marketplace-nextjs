@@ -73,17 +73,19 @@ const MyPage: NextPage<MyPagePropsType> = ({
           })
         })
           .then(response => response.json().catch(() => {}))
-          .then(async data => {
+          .then(async (data: { collections: CollectionType[] }) => {
             if (data?.collections && data?.collections?.length > 0) {
               await Promise.all(
                 data.collections
                   .filter((res: CollectionType) =>
                     res.logoImageMetadata?.startsWith('https://')
                   )
-                  .map((res: any) =>
-                    Axios.get(res.logoImageMetadata).then(({ data }) => {
-                      return Object.assign(res, { logoImageUrl: data.image });
-                    })
+                  .map(
+                    (res: CollectionType) =>
+                      res.logoImageMetadata &&
+                      Axios.get(res.logoImageMetadata).then(({ data }) => {
+                        return Object.assign(res, { logoImageUrl: data.image });
+                      })
                   )
               );
 
@@ -92,13 +94,15 @@ const MyPage: NextPage<MyPagePropsType> = ({
                   .filter((res: CollectionType) =>
                     res.featuredImageMetadata?.startsWith('https://')
                   )
-                  .map((res: any) =>
-                    Axios.get(res.featuredImageMetadata).then(({ data }) => {
-                      console.log(data.image);
-                      return Object.assign(res, {
-                        featuredImageUrl: data.image
-                      });
-                    })
+                  .map(
+                    (res: CollectionType) =>
+                      res.featuredImageMetadata &&
+                      Axios.get(res.featuredImageMetadata).then(({ data }) => {
+                        console.log(data.image);
+                        return Object.assign(res, {
+                          featuredImageUrl: data.image
+                        });
+                      })
                   )
               );
 

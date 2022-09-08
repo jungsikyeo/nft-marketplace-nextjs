@@ -14,12 +14,12 @@ export type CollectionType = {
 export type ItemType = {
   nftTokenId?: string;
   nftTokenURI?: string;
-  imageURL?: string;
+  imageURL?: string | any;
   name: string;
   description?: string;
-  supply: number;
+  supply?: number;
   collection?: string;
-  blockchain: string;
+  blockchain?: string;
   image?: File | null;
   price?: number;
   external_link?: string;
@@ -82,20 +82,7 @@ export type HomePropsType = {
   };
 };
 
-export const ICollections: CollectionType[] = [
-  {
-    name: '',
-    logoImageUrl: '',
-    featuredImageUrl: '',
-    account: '',
-    networkId: '',
-    slug: '',
-    description: '',
-    blockchain: ''
-  }
-];
-
-export interface HeaderProps {
+export type HeaderPropsType = {
   title: string;
   setTitle: any;
   network: {
@@ -111,11 +98,24 @@ export interface HeaderProps {
   setNightMode: any;
   connectWallet: any;
   disconnectWallet: any;
-}
+};
 
 export type AppLayoutPropsType = {
   children: React.ReactNode | any;
 };
+
+export const ICollections: CollectionType[] = [
+  {
+    name: '',
+    logoImageUrl: '',
+    featuredImageUrl: '',
+    account: '',
+    networkId: '',
+    slug: '',
+    description: '',
+    blockchain: ''
+  }
+];
 
 export interface IWindow {
   ethereum: any;

@@ -17,9 +17,10 @@ import Jazzicon, { jsNumberForAddress } from 'react-jazzicon';
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
-import { HeaderProps } from '@libs/client/client';
+import { HeaderPropsType } from '@libs/client/client';
+import { NextPage } from 'next';
 
-export default function Header({
+const Header: NextPage<HeaderPropsType> = ({
   title,
   setTitle,
   network,
@@ -32,7 +33,7 @@ export default function Header({
   setNightMode,
   disconnectWallet,
   connectWallet
-}: HeaderProps) {
+}: HeaderPropsType) => {
   const router = useRouter();
   const [current, setCurrent] = useState('/');
 
@@ -325,4 +326,6 @@ export default function Header({
       </nav>
     </div>
   );
-}
+};
+
+export default Header;

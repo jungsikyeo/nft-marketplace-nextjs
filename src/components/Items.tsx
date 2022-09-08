@@ -4,7 +4,7 @@ import Meta from 'antd/lib/card/Meta';
 import { NextPage } from 'next';
 import Link from 'next/link';
 
-const Items: NextPage<ItemType[]> = ({ itemList }: ItemType[] | any) => {
+const Items: ItemType[] | any = ({ itemList }: ItemType[] | any) => {
   return (
     <ul className="w-52 sm:w-full h-full flex flex-wrap">
       {itemList?.map((myNft: ItemType, key: number) => (

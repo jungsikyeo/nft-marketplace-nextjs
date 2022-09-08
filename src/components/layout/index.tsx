@@ -12,8 +12,11 @@ import OpenPlanet from '@abis/OpenPlanet.json';
 import { message } from 'antd';
 import { useRouter } from 'next/router';
 import { AppLayoutPropsType, IWindow } from '@libs/client/client';
+import { NextPage } from 'next';
 
-export default function BaseLayout({ children }: AppLayoutPropsType) {
+const BaseLayout: NextPage<AppLayoutPropsType> = ({
+  children
+}: AppLayoutPropsType) => {
   const [title, setTitle] = useState('');
   const [web3, setWeb3] = useState({});
   const [network, setNetwork] = useState({
@@ -240,4 +243,6 @@ export default function BaseLayout({ children }: AppLayoutPropsType) {
       })}
     </div>
   );
-}
+};
+
+export default BaseLayout;
