@@ -28,14 +28,13 @@ const sectionClass: string = `flex flex-col justify-start w-full mb-8`;
 const titleClass: string = `text-sm font-bold mb-2`;
 const messageClass: string = `text-xs font-semibold opacity-40 mb-2`;
 
-const SERVER_URL: string = process.env.NEXT_PUBLIC_SERVER_URL || '';
-
 const CreateCollection: NextPage<CreateCollectionType> = ({
   isUserLoggedIn,
   currentAccount,
   network,
   connectWallet
 }: CreateCollectionType) => {
+  const [serverUrl, setServerUrl] = useState('');
   const [loading, setLoading] = useState(false);
   const [submit, setSubmit] = useState(false);
   const [logoImage, setLogoImage] = useState(null);
@@ -271,6 +270,10 @@ const CreateCollection: NextPage<CreateCollectionType> = ({
     }
   }, [logoImage, name, submit, currentAccount]);
 
+  useEffect(() => {
+    setServerUrl(window.location.host);
+  }, []);
+
   return isUserLoggedIn ? (
     <div className="w-full h-full flex justify-center">
       <main className="flex flex-col items-start sm:w-1/2 md:w-2/5 w-2/3 py-11">
@@ -381,7 +384,7 @@ const CreateCollection: NextPage<CreateCollectionType> = ({
           </div>
           <div>
             <Input
-              addonBefore={`${SERVER_URL}/collection/`}
+              addonBefore={`${serverUrl}/collection/`}
               placeholder="treasures-of-the-planet"
               onChange={handlelSlug}
             />
