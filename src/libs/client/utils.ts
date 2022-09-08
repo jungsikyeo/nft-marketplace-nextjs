@@ -49,5 +49,7 @@ export const uploadStore = async (storeData: any) => {
 };
 
 export const extractMetadataUrl = (metadata: any) => {
-  return metadata ? `https://ipfs.io/ipfs/${metadata.url.split('//')[1]}` : '';
+  return metadata
+    ? `https://ipfs.io/ipfs/${metadata.image.split('//')[1]}`
+    : '';
 };
