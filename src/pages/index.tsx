@@ -1,4 +1,4 @@
-import Collections from '@components/collections';
+import Collections from '@components/Collections';
 import Items from '@components/Items';
 import {
   CollectionType,

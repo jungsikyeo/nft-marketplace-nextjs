@@ -5,7 +5,7 @@ import Axios from 'axios';
 import Jazzicon, { jsNumberForAddress } from 'react-jazzicon';
 import { PaperClipOutlined } from '@ant-design/icons';
 import Items from '@components/Items';
-import Collections from '@components/collections';
+import Collections from '@components/Collections';
 
 import {
   CollectionType,

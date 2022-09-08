@@ -18,6 +18,9 @@ model User {
   account   String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  @@index([networkId])
+  @@index([account])
 }
 
 model Collection {
@@ -33,4 +36,7 @@ model Collection {
   blockchain            String
   createdAt             DateTime @default(now())
   updatedAt             DateTime @updatedAt
+
+  @@index([networkId])
+  @@index([account])
 }

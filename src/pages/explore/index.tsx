@@ -2,7 +2,7 @@ import type { NextPage } from 'next';
 import { Typography, Tabs, Card } from 'antd';
 import { useEffect, useState } from 'react';
 import Axios from 'axios';
-import Collections from '@components/collections';
+import Collections from '@components/Collections';
 import {
   CollectionType,
   ExplorePropsType,
