@@ -77,10 +77,10 @@ const MyPage: NextPage<MyPagePropsType> = ({
             if (data?.collections && data?.collections?.length > 0) {
               await Promise.all(
                 data.collections
-                  .filter((res: CollectionType[]) =>
+                  .filter((res: CollectionType) =>
                     res.logoImageMetadata?.startsWith('https://')
                   )
-                  .map((res: CollectionType[]) =>
+                  .map((res: any) =>
                     Axios.get(res.logoImageMetadata).then(({ data }) => {
                       return Object.assign(res, { logoImageUrl: data.image });
                     })
@@ -89,7 +89,7 @@ const MyPage: NextPage<MyPagePropsType> = ({
 
               await Promise.all(
                 data.collections
-                  .filter((res: CollectionType[]) =>
+                  .filter((res: CollectionType) =>
                     res.featuredImageMetadata?.startsWith('https://')
                   )
                   .map((res: any) =>

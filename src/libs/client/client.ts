@@ -1,7 +1,9 @@
 export type CollectionType = {
   name: string;
   logoImageUrl?: string;
+  logoImageMetadata?: string;
   featuredImageUrl?: string;
+  featuredImageMetadata?: string;
   account: string;
   networkId: string;
   slug: string;

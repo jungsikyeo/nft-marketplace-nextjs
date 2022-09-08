@@ -1,9 +1,6 @@
-import Collections from '@components/Collections';
 import Items from '@components/Items';
 import {
-  CollectionType,
   HomePropsType,
-  ICollections,
   ItemTokenDataType,
   ItemType
 } from '@libs/client/client';
@@ -121,29 +118,31 @@ const Home: NextPage<HomePropsType> = ({
                   </div>
                   <div className="w-full xl:w-1/2 mt-10 xl:mt-0 flex justify-center xl:justify-end xl:mr-10">
                     <Link href="/item/">
-                      <div className="w-[35rem] shadow-2xl rounded-3xl">
-                        <Image
-                          src={item.imageURL}
-                          width="560"
-                          height="500"
-                          layout="fixed"
-                          objectFit="cover"
-                          objectPosition="center"
-                          className="rounded-t-3xl"
-                          alt="image"
-                          style={{
-                            zIndex: 5
-                          }}
-                        />
-                        <div className="flex">
-                          <div className="flex flex-col my-3 mx-7">
-                            <span className="text-lg font-semibold">
-                              {item.name}
-                            </span>
-                            <span className="mt-2">{item.collection}</span>
+                      <a>
+                        <div className="w-[35rem] shadow-2xl rounded-3xl">
+                          <Image
+                            src={item.imageURL}
+                            width="560"
+                            height="500"
+                            layout="fixed"
+                            objectFit="cover"
+                            objectPosition="center"
+                            className="rounded-t-3xl"
+                            alt="image"
+                            style={{
+                              zIndex: 5
+                            }}
+                          />
+                          <div className="flex">
+                            <div className="flex flex-col my-3 mx-7">
+                              <span className="text-lg font-semibold">
+                                {item.name}
+                              </span>
+                              <span className="mt-2">{item.collection}</span>
+                            </div>
                           </div>
                         </div>
-                      </div>
+                      </a>
                     </Link>
                   </div>
                 </div>
