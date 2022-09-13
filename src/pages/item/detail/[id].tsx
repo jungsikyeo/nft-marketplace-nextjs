@@ -56,7 +56,7 @@ const data: any[] = [];
 // }
 
 const NftDetail: NextPage<ItemDefailType> = ({
-  openPlanetContract,
+  contract,
   currentAccount
 }: ItemDefailType) => {
   const router = useRouter();
@@ -73,11 +73,9 @@ const NftDetail: NextPage<ItemDefailType> = ({
 
   useEffect(() => {
     const getNFTList = async () => {
-      if (currentAccount && openPlanetContract && router.query.id) {
+      if (currentAccount && contract && router.query.id) {
         const tokenId: number = Number(router.query.id);
-        const tokenUri = await openPlanetContract.methods
-          .tokenURI(tokenId)
-          .call();
+        const tokenUri = await contract.methods.tokenURI(tokenId).call();
         console.log('tokenUri', tokenUri);
         await Axios.get(tokenUri).then(async ({ data }) => {
           setName(data.name);
@@ -85,13 +83,13 @@ const NftDetail: NextPage<ItemDefailType> = ({
           setCollectionName(data.collection);
           setDescription(data.description);
         });
-        const price: string = await openPlanetContract.methods
+        const price: string = await contract.methods
           .getNftTokenPrice(tokenId)
           .call();
         setPrice(Number(ethers.utils.formatEther(String(price))));
         setSellPrice(Number(ethers.utils.formatEther(String(price))));
 
-        const result = await openPlanetContract.methods
+        const result = await contract.methods
           .getNftTokens(currentAccount)
           .call({ from: currentAccount });
 
@@ -104,7 +102,7 @@ const NftDetail: NextPage<ItemDefailType> = ({
       }
     };
     getNFTList();
-  }, [currentAccount, openPlanetContract, router.query.id]);
+  }, [currentAccount, contract, router.query.id]);
 
   const handleBuyNow = async () => {};
 
@@ -123,7 +121,7 @@ const NftDetail: NextPage<ItemDefailType> = ({
 
   const handleSendTransfer = async () => {
     !currentAccount && loginWarningNoti();
-    openPlanetContract.methods
+    contract.methods
       .transferFrom(currentAccount, address, router.query.id)
       .send({
         from: currentAccount,
@@ -134,7 +132,7 @@ const NftDetail: NextPage<ItemDefailType> = ({
   const handleListing = async () => {
     const isSell = await handleSellPrice(Number(sellPrice));
     if (isSell) {
-      const result = await openPlanetContract.methods
+      const result = await contract.methods
         .getNftTokens(currentAccount)
         .call({ from: currentAccount });
 
@@ -146,7 +144,7 @@ const NftDetail: NextPage<ItemDefailType> = ({
       setIsOwner(isOwner);
 
       if (isOwner) {
-        await openPlanetContract.methods
+        await contract.methods
           .addToMarket(
             router.query.id,
             ethers.utils.parseEther(String(sellPrice))

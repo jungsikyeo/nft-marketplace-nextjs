@@ -26,7 +26,7 @@ const messageClass = `text-xs font-semibold opacity-40 mb-2`;
 const ItemCreate: NextPage<CreateItemType> = ({
   isUserLoggedIn,
   currentAccount,
-  openPlanetContract,
+  contract,
   collections,
   connectWallet
 }: CreateItemType) => {
@@ -126,7 +126,7 @@ const ItemCreate: NextPage<CreateItemType> = ({
 
     if (!loading) {
       const metadata: any = await uploadStore(item);
-      openPlanetContract.methods
+      contract.methods
         .mintNFT(currentAccount, extractMetadataUrl(metadata.url))
         .send({
           from: currentAccount

@@ -38,7 +38,7 @@ export type CreateCollectionType = {
 export type CreateItemType = {
   isUserLoggedIn: boolean;
   currentAccount: string;
-  openPlanetContract: any;
+  contract: any;
   collections: string[];
   connectWallet: any;
 };
@@ -49,7 +49,7 @@ export type ItemTokenDataType = {
 };
 
 export type ItemDefailType = {
-  openPlanetContract: any;
+  contract: any;
   currentAccount: string;
 };
 
