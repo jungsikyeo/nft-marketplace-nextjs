@@ -10,11 +10,6 @@ const Custom404: NextPage = ({}) => {
     router.push('/');
   };
 
-  useEffect(() => {
-    const storageIsLogin =
-      localStorage.getItem('isUserLoggedIn') === 'true' ? true : false;
-  }, []);
-
   return (
     <div className="flex justify-center mt-32">
       <main className="flex flex-col items-center">

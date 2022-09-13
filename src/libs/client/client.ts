@@ -38,7 +38,7 @@ export type CreateCollectionType = {
 export type CreateItemType = {
   isUserLoggedIn: boolean;
   currentAccount: string;
-  contract: any;
+  openPlanetContract: any;
   collections: string[];
   connectWallet: any;
 };
@@ -49,7 +49,7 @@ export type ItemTokenDataType = {
 };
 
 export type ItemDefailType = {
-  contract: any;
+  openPlanetContract: any;
   currentAccount: string;
 };
 
@@ -76,6 +76,7 @@ export type LoginPropsType = {
 export type HomePropsType = {
   web3: any;
   contract: any;
+  openPlanetContract: any;
   currentAccount: string;
   network: {
     networkId: string;

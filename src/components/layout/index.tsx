@@ -14,6 +14,10 @@ import { useRouter } from 'next/router';
 import { AppLayoutPropsType, IWindow } from '@libs/client/client';
 import { NextPage } from 'next';
 
+const networkId = process.env.NEXT_PUBLIC_MARKET_NETWORK || 1661918429880;
+const mainetURL =
+  process.env.NEXT_PUBLIC_MAINNET_URL || 'http://144.24.70.230:8545';
+
 const BaseLayout: NextPage<AppLayoutPropsType> = ({
   children
 }: AppLayoutPropsType) => {
@@ -25,11 +29,33 @@ const BaseLayout: NextPage<AppLayoutPropsType> = ({
   });
   const [isUserLoggedIn, setIsUserLoggedIn] = useState(false);
   const [currentAccount, setCurrentAccount] = useState('');
+  const [openPlanetContract, setOpenPlanetContract] = useState(null);
   const [contract, setContract] = useState(null);
   const [balance, setbalance] = useState('');
   const [sidebar, setSidebar] = useState(false);
   const [nightMode, setNightMode] = useState(false);
   const router = useRouter();
+
+  useEffect(() => {
+    const loadOpenPlanet = async (networkId: any) => {
+      if (networkId) {
+        const web3 = new Web3();
+        web3.setProvider(mainetURL);
+        const newNetworks: any = OpenPlanet.networks;
+        const networkData: any = newNetworks[networkId];
+        if (networkData) {
+          const abi: any = OpenPlanet.abi;
+          const address: string = networkData.address;
+          const openPlanetContract: any = await new web3.eth.Contract(
+            abi,
+            address
+          );
+          setOpenPlanetContract(openPlanetContract);
+        }
+      }
+    };
+    loadOpenPlanet(networkId);
+  }, [networkId]);
 
   const connectWallet = async () => {
     try {
@@ -61,7 +87,6 @@ const BaseLayout: NextPage<AppLayoutPropsType> = ({
       if (accounts.length > 0) {
         console.log('Found account', accounts[0]);
         setIsUserLoggedIn(true);
-        localStorage.setItem('isUserLoggedIn', 'true');
         setCurrentAccount(accounts[0]);
 
         const newNetworks: any = OpenPlanet.networks;
@@ -119,7 +144,6 @@ const BaseLayout: NextPage<AppLayoutPropsType> = ({
       await setWeb3({});
       await setNetwork({ networkId: '', networkName: '' });
       await setIsUserLoggedIn(false);
-      await localStorage.setItem('isUserLoggedIn', 'false');
       await setCurrentAccount('');
       await setbalance('');
       await logOutSuccessNoti();
@@ -209,9 +233,7 @@ const BaseLayout: NextPage<AppLayoutPropsType> = ({
   }, [children]);
 
   useEffect(() => {
-    const storageIsLogin =
-      localStorage.getItem('isUserLoggedIn') === 'true' ? true : false;
-    if (storageIsLogin && !isUserLoggedIn) {
+    if (!isUserLoggedIn) {
       connectWallet();
     }
   }, []);
@@ -237,6 +259,7 @@ const BaseLayout: NextPage<AppLayoutPropsType> = ({
         isUserLoggedIn,
         currentAccount,
         contract,
+        openPlanetContract,
         network,
         connectWallet
       })}

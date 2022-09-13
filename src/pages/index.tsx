@@ -12,37 +12,15 @@ import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import { extractMetadataUrl } from '@libs/client/utils';
 import OpenPlanet from '@abis/OpenPlanet.json';
+import Web3 from 'web3';
 
 const Home: NextPage<HomePropsType> = ({
-  web3,
-  currentAccount
+  currentAccount,
+  openPlanetContract
 }: HomePropsType) => {
   const [trendItemList, setTrendItemList] = useState<ItemType[]>();
   const [mainImage, setMainImage] = useState<ItemType>();
-  const [openPlanetContract, setOpenPlanetContract] = useState(null);
   const networkId = process.env.NEXT_PUBLIC_MARKET_NETWORK || 1661918429880;
-  const mainetURL =
-    process.env.NEXT_PUBLIC_MAINNET_URL || 'http://144.24.70.230:8545';
-
-  useEffect(() => {
-    const loadOpenPlanet = async (networkId: any) => {
-      if (networkId && web3 && web3.eth) {
-        const newNetworks: any = OpenPlanet.networks;
-        const networkData: any = newNetworks[networkId];
-        if (networkData) {
-          const abi: any = OpenPlanet.abi;
-          const address: string = networkData.address;
-          const openPlanetContract: any = await new web3.eth.Contract(
-            abi,
-            address
-          );
-          openPlanetContract.setProvider(mainetURL);
-          setOpenPlanetContract(openPlanetContract);
-        }
-      }
-    };
-    loadOpenPlanet(networkId);
-  }, [networkId, web3]);
 
   useEffect(() => {
     trendItemList &&
