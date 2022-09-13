@@ -120,12 +120,18 @@ const NftDetail: NextPage<ItemDefailType> = ({
   };
 
   const handleSendTransfer = async () => {
-    !currentAccount && loginWarningNoti();
+    if (!currentAccount) {
+      loginWarningNoti();
+      return;
+    }
     contract.methods
       .transferFrom(currentAccount, address, router.query.id)
       .send({
         from: currentAccount,
         gas: 210000
+      })
+      .once('receipt', async (receipt: any) => {
+        await router.reload();
       });
   };
 
