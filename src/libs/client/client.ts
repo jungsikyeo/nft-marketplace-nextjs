@@ -132,7 +132,6 @@ export type CurrentPriceOwnerType = {
   imageUrl: string;
   alertText: boolean;
   handleSell: any;
-  handleMakeOffer: any;
   handleSendTransfer: any;
   handleSellPrice: any;
   handleListing: any;

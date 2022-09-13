@@ -10,8 +10,7 @@ import {
   Radio,
   Form
 } from 'antd';
-import { TagFilled, SendOutlined } from '@ant-design/icons';
-import { useState } from 'react';
+import { AccountBookOutlined, SendOutlined } from '@ant-design/icons';
 import { CurrentPriceOwnerType } from '@libs/client/client';
 
 const { Title, Text } = Typography;
@@ -25,7 +24,6 @@ const CurrentPriceOwner: CurrentPriceOwnerType | any = ({
   imageUrl,
   alertText,
   handleSell,
-  handleMakeOffer,
   handleSendTransfer,
   handleSellPrice,
   handleListing
@@ -99,15 +97,28 @@ const CurrentPriceOwner: CurrentPriceOwnerType | any = ({
           <SendOutlined />
           <span>Transfer</span>
         </Button>
-        <Button
-          size="large"
-          style={{ width: '100%' }}
-          onClick={handleMakeOffer}
-          className="flex items-center justify-center"
-        >
-          <TagFilled />
-          <span>Make offer</span>
-        </Button>
+        {Number(price) === 0 ? (
+          <Button
+            size="large"
+            style={{ width: '100%' }}
+            onClick={handleSell}
+            className="flex items-center justify-center bg-info border-info text-white"
+          >
+            <AccountBookOutlined />
+            <span>Sell</span>
+          </Button>
+        ) : (
+          <Button
+            size="large"
+            style={{ width: '100%' }}
+            onClick={handleSell}
+            className="flex items-center justify-center bg-info border-info text-white"
+          >
+            <AccountBookOutlined />
+            <span>Lower price</span>
+          </Button>
+        )}
+
         <Modal
           title="Sell Item"
           visible={openModal}
