@@ -74,6 +74,7 @@ export type LoginPropsType = {
 };
 
 export type HomePropsType = {
+  web3: any;
   contract: any;
   currentAccount: string;
   network: {
@@ -120,3 +121,32 @@ export const ICollections: CollectionType[] = [
 export interface IWindow {
   ethereum: any;
 }
+
+export type CurrentPriceOwnerType = {
+  price: string;
+  setAddress: any;
+  openModal: any;
+  setOpenModal: any;
+  name: string;
+  imageUrl: string;
+  alertText: boolean;
+  handleSell: any;
+  handleMakeOffer: any;
+  handleSendTransfer: any;
+  handleSellPrice: any;
+  handleListing: any;
+};
+
+export type CurrentPriceNotOwnerType = {
+  price: string;
+  setAddress: any;
+  openModal: any;
+  setOpenModal: any;
+  name: string;
+  imageUrl: string;
+  alertText: boolean;
+  handleMakeOffer: any;
+  handleBuyNow: any;
+  handleSellPrice: any;
+  handleListing: any;
+};

@@ -1,24 +1,12 @@
-import {
-  Button,
-  Card,
-  Collapse,
-  Empty,
-  Image,
-  Space,
-  Table,
-  Typography,
-  Input
-} from 'antd';
+import { Card, Collapse, Empty, Image, Table, Typography, message } from 'antd';
 import React, { useEffect, useState } from 'react';
 import {
   AlignLeftOutlined,
-  ClockCircleOutlined,
   ProfileOutlined,
   StockOutlined,
   TagFilled,
   TagsFilled,
   UnorderedListOutlined,
-  WalletFilled,
   ZoomInOutlined
 } from '@ant-design/icons';
 import { loginWarningNoti } from '@components/notification';
@@ -26,10 +14,14 @@ import Axios from 'axios';
 import { NextPage } from 'next';
 import { useRouter } from 'next/router';
 import Link from 'next/link';
-import { ItemDefailType } from '@libs/client/client';
+import { ItemDefailType, ItemType } from '@libs/client/client';
+import { extractMetadataUrl } from '@libs/client/utils';
+import { ethers } from 'ethers';
+import CurrentPriceOwner from '@components/item/detail/CurrenPriceNotOwner';
+import CurrentPriceNotOwner from '@components/item/detail/CurrenPriceNotOwner';
 
 const { Panel } = Collapse;
-const { Title, Text, Paragraph } = Typography;
+const { Title, Paragraph } = Typography;
 
 const columns = [
   {
@@ -73,76 +65,61 @@ const NftDetail: NextPage<ItemDefailType> = ({
   const [imageUrl, setImageUrl] = useState('');
   const [description, setDescription] = useState('');
   const [collectionName, setCollectionName] = useState('');
-
-  // const tx_id = location.pathname.split('/')[4];
-  // const token_id = location.pathname.split('/')[5];
-
-  // const getNFTList = async () => {
-  //   const response = await getNFTDetailAPI(tx_id, token_id);
-  //   setNFTName(response.name);
-  //   setNFTImg(response.image_url);
-  //   setNFTDescription(response.description);
-  //   setNFTCollectionName(response.collection.name);
-  // };
-
-  const getNFTList = async () => {
-    if (contract && currentAccount) {
-      const result = await contract.methods
-        .getNftTokens(currentAccount)
-        .call({ from: currentAccount });
-
-      const metadata = await Promise.all(
-        result
-          .filter((res: any) => res.nftTokenId === router.query.id)
-          .map((res: any) =>
-            Axios.get(res.nftTokenURI).then(({ data }) =>
-              Object.assign(data, res)
-            )
-          )
-      );
-
-      const correctMetadata = await metadata
-        .filter(meta => meta.image)
-        .map(meta => {
-          return {
-            name: meta.name,
-            imageUrl: `https://ipfs.io/ipfs/${meta.image.split('//')[1]}`,
-            collectionName: meta.collection,
-            description: meta.description,
-            price: meta.price
-          };
-        });
-
-      if (correctMetadata[0] !== undefined) {
-        setName(correctMetadata[0].name);
-        setPrice(correctMetadata[0].price);
-        setImageUrl(correctMetadata[0].imageUrl);
-        setCollectionName(correctMetadata[0].collectionName);
-        setDescription(correctMetadata[0].description);
-      }
-    }
-  };
+  const [address, setAddress] = useState('');
+  const [isOwner, setIsOwner] = useState(false);
+  const [openModal, setOpenModal] = useState(false);
+  const [sellPrice, setSellPrice] = useState(price);
+  const [alertText, setAlertText] = useState(false);
 
   useEffect(() => {
+    const getNFTList = async () => {
+      if (currentAccount && contract && router.query.id) {
+        const tokenId: number = Number(router.query.id);
+        const tokenUri = await contract.methods.tokenURI(tokenId).call();
+        console.log('tokenUri', tokenUri);
+        await Axios.get(tokenUri).then(async ({ data }) => {
+          setName(data.name);
+          setImageUrl(extractMetadataUrl(data.image));
+          setCollectionName(data.collection);
+          setDescription(data.description);
+        });
+        const price: string = await contract.methods
+          .getNftTokenPrice(tokenId)
+          .call();
+        setPrice(Number(ethers.utils.formatEther(String(price))));
+        setSellPrice(Number(ethers.utils.formatEther(String(price))));
+
+        const result = await contract.methods
+          .getNftTokens(currentAccount)
+          .call({ from: currentAccount });
+
+        const isOwner =
+          result.filter((res: ItemType) => res.nftTokenId === router.query.id)
+            .length > 0
+            ? true
+            : false;
+        setIsOwner(isOwner);
+      }
+    };
     getNFTList();
   }, [currentAccount, contract, router.query.id]);
 
-  const [address, setAddress] = useState('');
+  const handleBuyNow = async () => {};
 
-  const onMakeOffer = async () => {
+  const handleMakeOffer = async () => {
+    alert('This is not ready yet.');
     return;
-    !currentAccount && loginWarningNoti();
-    // console.log(tokenContract);
-    // tokenContract.methods.setApprovalForAll(contract_addr, 'true').send({
-    //   from: account,
-    // });
-    contract.methods.addToMarket(router.query.id, '100').send({
-      from: currentAccount,
-      gas: 210000
-    });
   };
 
-  const onSendTransfer = async () => {
+  const openSell = async () => {
+    await setOpenModal(!openModal);
+  };
+
+  const handleSell = async () => {
+    await openSell();
+  };
+
+  const handleSendTransfer = async () => {
     !currentAccount && loginWarningNoti();
     contract.methods
       .transferFrom(currentAccount, address, router.query.id)
@@ -150,6 +127,55 @@ const NftDetail: NextPage<ItemDefailType> = ({
         from: currentAccount,
         gas: 210000
       });
+  };
+
+  const handleListing = async () => {
+    const isSell = await handleSellPrice(Number(sellPrice));
+    if (isSell) {
+      const result = await contract.methods
+        .getNftTokens(currentAccount)
+        .call({ from: currentAccount });
+
+      const isOwner =
+        result.filter((res: ItemType) => res.nftTokenId === router.query.id)
+          .length > 0
+          ? true
+          : false;
+      setIsOwner(isOwner);
+
+      if (isOwner) {
+        await contract.methods
+          .addToMarket(
+            router.query.id,
+            ethers.utils.parseEther(String(sellPrice))
+          )
+          .send({
+            from: currentAccount,
+            gas: 210000
+          });
+
+        await router.reload();
+      } else {
+        message.error('You are not Item Owner.');
+        setOpenModal(false);
+      }
+    }
+  };
+
+  const handleSellPrice = async (value: number) => {
+    if (Number(value) === 0) {
+      await setAlertText(true);
+      return false;
+    }
+
+    if (Number(price) > 0 && Number(value) >= Number(price)) {
+      await setAlertText(true);
+      return false;
+    }
+
+    await setSellPrice(value);
+    await setAlertText(false);
+    return true;
   };
 
   return (
@@ -185,87 +211,37 @@ const NftDetail: NextPage<ItemDefailType> = ({
                   />
                 </Card>
                 {/* Curren Price Box */}
-                <Card
-                  title={
-                    <>
-                      <ClockCircleOutlined /> Sale ends August 16, 2022 at
-                      2:32am GMT+9
-                    </>
-                  }
-                  className="rounded-lg"
-                >
-                  <Space direction="vertical" style={{ width: '100%' }}>
-                    <Text type="secondary">Current price</Text>
-                    <Space className="h-12">
-                      <div className="h-full flex items-center">
-                        <svg
-                          width="23"
-                          height="30"
-                          viewBox="0 0 33 53"
-                          fill="none"
-                          xmlns="http://www.w3.org/2000/svg"
-                        >
-                          <path
-                            d="M16.3576 0.666687L16.0095 1.85009V36.1896L16.3576 36.5371L32.2976 27.115L16.3576 0.666687Z"
-                            fill="#343434"
-                          />
-                          <path
-                            d="M16.3578 0.666687L0.417816 27.115L16.3578 36.5372V19.8699V0.666687Z"
-                            fill="#8C8C8C"
-                          />
-                          <path
-                            d="M16.3575 39.5552L16.1613 39.7944V52.0268L16.3575 52.6L32.307 30.1378L16.3575 39.5552Z"
-                            fill="#3C3C3B"
-                          />
-                          <path
-                            d="M16.3578 52.5998V39.5551L0.417816 30.1377L16.3578 52.5998Z"
-                            fill="#8C8C8C"
-                          />
-                          <path
-                            d="M16.3575 36.537L32.2973 27.1151L16.3575 19.8699V36.537Z"
-                            fill="#141414"
-                          />
-                          <path
-                            d="M0.417816 27.1151L16.3576 36.537V19.8699L0.417816 27.1151Z"
-                            fill="#393939"
-                          />
-                        </svg>
-                      </div>
-                      <Title
-                        level={2}
-                        className="h-full flex justify-center mb-0"
-                      >
-                        {price}
-                      </Title>
-                    </Space>
-                    <Input
-                      placeholder="e.g. 0x1ed3... or destination.eth"
-                      onChange={event => {
-                        setAddress(event.target.value);
-                      }}
-                    />
-                    <span className="flex justify-center items-center text-xs font-semibold -mt-1 mb-1">{`"${name}" will be transferred to ...`}</span>
-                    <Button
-                      type="primary"
-                      size="large"
-                      style={{ width: '100%' }}
-                      onClick={onSendTransfer}
-                      className="flex items-center justify-center"
-                    >
-                      <WalletFilled />
-                      <span>Transfer</span>
-                    </Button>
-                    <Button
-                      size="large"
-                      style={{ width: '100%' }}
-                      onClick={onMakeOffer}
-                      className="flex items-center justify-center"
-                    >
-                      <TagFilled />
-                      <span>Make offer</span>
-                    </Button>
-                  </Space>
-                </Card>
+                {isOwner ? (
+                  <CurrentPriceOwner
+                    price={price}
+                    setAddress={setAddress}
+                    openModal={openModal}
+                    setOpenModal={setOpenModal}
+                    name={name}
+                    imageUrl={imageUrl}
+                    alertText={alertText}
+                    handleSell={handleSell}
+                    handleMakeOffer={handleMakeOffer}
+                    handleSendTransfer={handleSendTransfer}
+                    handleSellPrice={handleSellPrice}
+                    handleListing={handleListing}
+                  />
+                ) : (
+                  <CurrentPriceNotOwner
+                    price={price}
+                    setAddress={setAddress}
+                    openModal={openModal}
+                    setOpenModal={setOpenModal}
+                    name={name}
+                    imageUrl={imageUrl}
+                    alertText={alertText}
+                    handleSell={handleSell}
+                    handleMakeOffer={handleMakeOffer}
+                    handleBuyNow={handleBuyNow}
+                    handleSellPrice={handleSellPrice}
+                    handleListing={handleListing}
+                  />
+                )}
               </div>
 
               {/* Order Box */}

@@ -23,7 +23,7 @@ const sectionClass = `flex flex-col justify-start w-full mb-8`;
 const titleClass = `text-sm font-bold mb-2`;
 const messageClass = `text-xs font-semibold opacity-40 mb-2`;
 
-const CreateItem: NextPage<CreateItemType> = ({
+const ItemCreate: NextPage<CreateItemType> = ({
   isUserLoggedIn,
   currentAccount,
   contract,
@@ -34,7 +34,6 @@ const CreateItem: NextPage<CreateItemType> = ({
   const [submit, setSubmit] = useState(false);
   const [image, setImage] = useState(null);
   const [name, setName] = useState('');
-  const [price, setPrice] = useState(1);
   const [description, setDescription] = useState('');
   const [externalUrl, setExternalUrl] = useState('');
   const [supply, setSupply] = useState(1);
@@ -69,9 +68,7 @@ const CreateItem: NextPage<CreateItemType> = ({
 
     setPreviewImage(fileUrl || filePreview);
     setPreviewVisible(true);
-    setPreviewTitle(
-      fileName || fileUrl.substring(fileUrl.lastIndexOf('/') + 1)
-    );
+    setPreviewTitle(fileTitle);
   };
 
   const handleChange = ({
@@ -107,7 +104,6 @@ const CreateItem: NextPage<CreateItemType> = ({
   );
 
   const handleName = (event: any) => setName(event.target.value);
-  const handlePrice = (value: number) => setPrice(value);
   const handleDescription = (event: any) => setDescription(event.target.value);
   const handleExternalUrl = (event: any) => setExternalUrl(event.target.value);
   const handleSupply = (value: number) => setSupply(value);
@@ -121,7 +117,6 @@ const CreateItem: NextPage<CreateItemType> = ({
     const item: ItemType = {
       image,
       name,
-      price,
       description,
       external_link: externalUrl,
       supply,
@@ -130,9 +125,9 @@ const CreateItem: NextPage<CreateItemType> = ({
     };
 
     if (!loading) {
-      const metadata = await uploadStore(item);
+      const metadata: any = await uploadStore(item);
       contract.methods
-        .mintNFT(currentAccount, extractMetadataUrl(metadata))
+        .mintNFT(currentAccount, extractMetadataUrl(metadata.url))
         .send({
           from: currentAccount
         })
@@ -153,13 +148,13 @@ const CreateItem: NextPage<CreateItemType> = ({
     if (submit || !currentAccount) {
       setLoading(true);
     } else {
-      if (image && name && price) {
+      if (image && name) {
         setLoading(false);
       } else {
         setLoading(true);
       }
     }
-  }, [image, name, price, submit, currentAccount]);
+  }, [image, name, submit, currentAccount]);
 
   return isUserLoggedIn ? (
     <div>
@@ -197,19 +192,6 @@ const CreateItem: NextPage<CreateItemType> = ({
             <div className={`${titleClass} ${requireClass}`}>Name</div>
             <div className="w-full">
               <Input onChange={handleName} placeholder="Item name" />
-            </div>
-          </section>
-          <section className={sectionClass}>
-            <div className={`${titleClass} ${requireClass}`}>Price</div>
-            <div className="w-full">
-              <InputNumber
-                onChange={handlePrice}
-                placeholder="Item Price"
-                min={1}
-                step="0,00001"
-                addonAfter="ETH"
-                stringMode
-              />
             </div>
           </section>
           <section className={sectionClass}>
@@ -316,7 +298,7 @@ const CreateItem: NextPage<CreateItemType> = ({
   );
 };
 
-export default CreateItem;
+export default ItemCreate;
 
 export const getServerSideProps: GetServerSideProps = async ({ query }) => {
   const networkId: string = query && query.params ? query.params[0] : '';

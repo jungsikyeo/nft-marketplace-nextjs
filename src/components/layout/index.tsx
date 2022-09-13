@@ -153,13 +153,11 @@ const BaseLayout: NextPage<AppLayoutPropsType> = ({
       if (router.route === '/login' || router.route === '/mypage') {
         await router.push('/mypage');
       } else if (
-        router.route.startsWith('/create/item/') &&
-        router.route.replace('/create/item/', '') !== _account
+        router.route.startsWith('/item/create/') &&
+        router.route.replace('/item/create/', '') !== _account
       ) {
         (window as any).location =
-          await `/create/item/${network.networkId}/${_account}`;
-      } else {
-        await router.push(router.route);
+          await `/item/create/${network.networkId}/${_account}`;
       }
     }
   };
@@ -235,6 +233,7 @@ const BaseLayout: NextPage<AppLayoutPropsType> = ({
         setSidebar={setSidebar}
       />
       {React.cloneElement(children, {
+        web3,
         isUserLoggedIn,
         currentAccount,
         contract,

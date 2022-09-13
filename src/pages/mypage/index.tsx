@@ -56,7 +56,7 @@ const MyPage: NextPage<MyPagePropsType> = ({
           };
           return item;
         });
-
+        console.log(items);
         setMyItemList(items.sort().reverse());
       };
       loadMyItemList(contract);

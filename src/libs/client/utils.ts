@@ -48,8 +48,7 @@ export const uploadStore = async (storeData: any) => {
   });
 };
 
-export const extractMetadataUrl = (metadata: any) => {
-  return metadata
-    ? `https://ipfs.io/ipfs/${metadata.image.split('//')[1]}`
-    : '';
+export const extractMetadataUrl = (url: string) => {
+  console.log(url);
+  return url ? `https://ipfs.io/ipfs/${url.split('//')[1]}` : '';
 };

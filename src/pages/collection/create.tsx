@@ -28,7 +28,7 @@ const sectionClass: string = `flex flex-col justify-start w-full mb-8`;
 const titleClass: string = `text-sm font-bold mb-2`;
 const messageClass: string = `text-xs font-semibold opacity-40 mb-2`;
 
-const CreateCollection: NextPage<CreateCollectionType> = ({
+const CollectionCreate: NextPage<CreateCollectionType> = ({
   isUserLoggedIn,
   currentAccount,
   network,
@@ -208,19 +208,19 @@ const CreateCollection: NextPage<CreateCollectionType> = ({
     };
 
     if (!loading) {
-      const logoMetadata = await uploadStore({
+      const logoMetadata: any = await uploadStore({
         ...collection,
         image: logoImage
       });
 
-      const featuredMetadata = featuredImage
+      const featuredMetadata: any = featuredImage
         ? await uploadStore({
             ...collection,
             image: featuredImage
           })
         : null;
 
-      const bannerMetadata = bannerImage
+      const bannerMetadata: any = bannerImage
         ? await uploadStore({
             ...collection,
             image: bannerImage
@@ -235,9 +235,9 @@ const CreateCollection: NextPage<CreateCollectionType> = ({
         body: JSON.stringify({
           networkId: collection.networkId,
           account: collection.account,
-          logoImageMetadata: extractMetadataUrl(logoMetadata),
-          featuredImageMetadata: extractMetadataUrl(featuredMetadata),
-          bannerImageMetadata: extractMetadataUrl(bannerMetadata),
+          logoImageMetadata: extractMetadataUrl(logoMetadata.image),
+          featuredImageMetadata: extractMetadataUrl(featuredMetadata.image),
+          bannerImageMetadata: extractMetadataUrl(bannerMetadata.image),
           name: collection.name,
           description: collection.description,
           slug: collection.slug,
@@ -444,4 +444,4 @@ const CreateCollection: NextPage<CreateCollectionType> = ({
   );
 };
 
-export default CreateCollection;
+export default CollectionCreate;

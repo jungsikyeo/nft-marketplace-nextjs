@@ -97,11 +97,11 @@ const Header: NextPage<HeaderPropsType> = ({
       children: [
         {
           label: 'New Collection',
-          key: '/create/collection'
+          key: '/collection/create'
         },
         {
           label: 'New Item',
-          key: `/create/item/${network.networkId}/${currentAccount}`
+          key: `/item/create/${network.networkId}/${currentAccount}`
         }
       ]
     },
@@ -184,7 +184,7 @@ const Header: NextPage<HeaderPropsType> = ({
                   </p>
                 </li>
               </Link>
-              <Link href={isUserLoggedIn ? `/create/collection` : `/login`}>
+              <Link href={isUserLoggedIn ? `/collection/create` : `/login`}>
                 <li className="w-full h-1/4 border-b border-black border-opacity-10 hover:shadow-md hover:cursor-pointer">
                   <p className="h-full flex flex-row items-center">
                     <FileAddOutlined className="m-4 text-xl" />
@@ -197,7 +197,7 @@ const Header: NextPage<HeaderPropsType> = ({
               <Link
                 href={
                   isUserLoggedIn
-                    ? `/create/item/${network.networkId}/${currentAccount}`
+                    ? `/item/create/${network.networkId}/${currentAccount}`
                     : `/login`
                 }
               >

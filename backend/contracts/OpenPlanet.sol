@@ -97,14 +97,26 @@ contract OpenPlanet is ERC721URIStorage, Ownable, ERC721Enumerable {
   uint256[] public onSaleNftTokenArray;
 
   function addToMarket(uint256 _tokenId, uint256 _price) public {
+    // nft를 소유한 계정에서만 판매등록 가능
     address nftTokenOwner = ownerOf(_tokenId);
+
+    // 마켓에 올리기 위한 조건들
     require(nftTokenOwner == msg.sender, 'Caller is not nft token owner.');
+    // require(_price > 0, "Price is zero or lower.");
+    // require(nftTokenPrices[_tokenId] == 0, "This nft token is already on sale.");
+
     setApprovalForAll(address(this), true);
 
+    //판매 리스트에서 삭제
+    removeToken(_tokenId);
+
     nftTokenPrices[_tokenId] = _price;
+
+    // push를 이용해 데이터를 넣어줌
     onSaleNftTokenArray.push(_tokenId); //판매중인 nft list
   }
 
+  // 판매리스트, 배열을 하나 만들고 Loop 돌리는 형태
   function getMarketList() public view returns (NftTokenData[] memory) {
     uint256[] memory onSaleNftToken = getSaleNftToken();
     NftTokenData[] memory onSaleNftTokens = new NftTokenData[](
@@ -113,7 +125,7 @@ contract OpenPlanet is ERC721URIStorage, Ownable, ERC721Enumerable {
 
     for (uint256 i = 0; i < onSaleNftToken.length; i++) {
       uint256 tokenId = onSaleNftToken[i];
-      //uint256 tokenPrice = getNftTokenPrice(tokenId);
+      uint256 tokenPrice = getNftTokenPrice(tokenId);
       onSaleNftTokens[i] = NftTokenData(tokenId, tokenURI(tokenId));
     }
 
@@ -128,21 +140,34 @@ contract OpenPlanet is ERC721URIStorage, Ownable, ERC721Enumerable {
     return nftTokenPrices[_tokenId];
   }
 
+  //구매함수, payable 사용!!
   function buyNft(uint256 _tokenId) public payable {
+    // 금액
     uint256 price = nftTokenPrices[_tokenId];
+    // 해당 nft 소유자
     address nftTokenOwner = ownerOf(_tokenId);
+
+    // 제한사항, owner는 구매하지 못함.
     require(price > 0, 'nft token not sale.');
+    // require(price  <= msg.value, "caller sent lower than price.");
     require(nftTokenOwner != msg.sender, 'caller is nft token owner.');
+    // 상태가 false일때는 구매 못함.
     require(
       isApprovedForAll(nftTokenOwner, address(this)),
       'nft token owner did not approve token.'
     );
+
+    // 구매가 이루어지면 nft를 transfer
     payable(nftTokenOwner).transfer(msg.value);
+
+    // 소유권 이전. IERC721에 정의된 스펙
     IERC721(address(this)).safeTransferFrom(
       nftTokenOwner,
       msg.sender,
       _tokenId
     );
+
+    //판매 리스트에서 삭제
     removeToken(_tokenId);
   }
 

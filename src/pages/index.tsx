@@ -10,14 +10,37 @@ import Axios from 'axios';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
+import { extractMetadataUrl } from '@libs/client/utils';
+import OpenPlanet from '@abis/OpenPlanet.json';
 
 const Home: NextPage<HomePropsType> = ({
+  web3,
   contract,
-  currentAccount,
-  network
+  currentAccount
 }: HomePropsType) => {
   const [trendItemList, setTrendItemList] = useState<ItemType[]>();
   const [mainImage, setMainImage] = useState<ItemType>();
+  const [openPlanetContract, setOpenPlanetContract] = useState(null);
+  const networkId = process.env.NEXT_PUBLIC_MARKET_NETWORK || 1661918429880;
+
+  useEffect(() => {
+    const loadOpenPlanet = async (networkId: any) => {
+      if (networkId && web3 && web3.eth) {
+        const newNetworks: any = OpenPlanet.networks;
+        const networkData: any = newNetworks[networkId];
+        if (networkData) {
+          const abi: any = OpenPlanet.abi;
+          const address: string = networkData.address;
+          const openPlanetContract: any = await new web3.eth.Contract(
+            abi,
+            address
+          );
+          setOpenPlanetContract(openPlanetContract);
+        }
+      }
+    };
+    loadOpenPlanet(networkId);
+  }, [networkId, web3]);
 
   useEffect(() => {
     trendItemList &&
@@ -25,19 +48,24 @@ const Home: NextPage<HomePropsType> = ({
         if (key === 0) {
           console.log(item);
           setMainImage({
+            nftTokenId: item.nftTokenId,
+            nftTokenURI: item.nftTokenURI,
             imageURL: item.imageURL,
             name: item.name,
-            collection: item.collection
+            description: item.description,
+            supply: item.supply,
+            collection: item.collection,
+            blockchain: item.blockchain
           });
         }
       });
   }, [trendItemList]);
 
   useEffect(() => {
-    if (contract && currentAccount && network) {
+    if (openPlanetContract) {
       const loadMyItemList = async (contract: any) => {
         const NFTsTokenData: ItemTokenDataType[] = await contract.methods
-          .getNftTokens(currentAccount)
+          .getMarketList()
           .call();
 
         const NFTsMetadata = await Promise.all(
@@ -54,7 +82,7 @@ const Home: NextPage<HomePropsType> = ({
           const item: ItemType = {
             nftTokenId: metadata.nftTokenId,
             nftTokenURI: metadata.nftTokenURI,
-            imageURL: `https://ipfs.io/ipfs/${metadata.image.split('//')[1]}`,
+            imageURL: extractMetadataUrl(metadata.image),
             name: metadata.name,
             description: metadata.description,
             supply: metadata.supply,
@@ -68,11 +96,11 @@ const Home: NextPage<HomePropsType> = ({
 
         setTrendItemList(items.sort().reverse());
       };
-      loadMyItemList(contract);
+      loadMyItemList(openPlanetContract);
     } else {
       setTrendItemList([]);
     }
-  }, [contract, currentAccount, network]);
+  }, [openPlanetContract]);
 
   return (
     <div className="w-full h-auto flex flex-col justify-between">
@@ -123,7 +151,7 @@ const Home: NextPage<HomePropsType> = ({
                 </Button>
                 <Button
                   type="primary"
-                  href={`/create/item/${network.networkId}/${currentAccount}`}
+                  href={`/item/create/${networkId}/${currentAccount}`}
                   className="w-36 h-14 bg-white border-white text-info ml-5 flex justify-center items-center"
                 >
                   Create
@@ -131,33 +159,36 @@ const Home: NextPage<HomePropsType> = ({
               </div>
             </div>
             <div className="w-full xl:w-1/2 mt-10 xl:mt-0 flex justify-center xl:justify-end xl:mr-10">
-              <Link href="/item/">
-                <div className="w-[35rem] shadow-2xl rounded-3xl">
-                  {mainImage && (
-                    <Image
-                      src={mainImage.imageURL}
-                      width="560"
-                      height="500"
-                      layout="fixed"
-                      objectFit="cover"
-                      objectPosition="center"
-                      className="rounded-t-3xl"
-                      alt="image"
-                      style={{
-                        zIndex: 5
-                      }}
-                    />
-                  )}
-                  <div className="flex">
-                    <div className="flex flex-col my-3 mx-7">
-                      <span className="text-lg font-semibold">
-                        {mainImage?.name}
-                      </span>
-                      <span className="mt-2">{mainImage?.collection}</span>
+              {mainImage && (
+                <Link href={`/item/detail/${mainImage?.nftTokenId}`}>
+                  <a>
+                    <div className="w-[35rem] shadow-2xl rounded-3xl">
+                      <Image
+                        src={mainImage.imageURL}
+                        width="560"
+                        height="500"
+                        layout="fixed"
+                        objectFit="cover"
+                        objectPosition="center"
+                        className="rounded-t-3xl"
+                        alt="image"
+                        style={{
+                          zIndex: 5
+                        }}
+                      />
+
+                      <div className="flex">
+                        <div className="flex flex-col my-3 mx-7">
+                          <span className="text-lg font-semibold">
+                            {mainImage?.name}
+                          </span>
+                          <span className="mt-2">{mainImage?.collection}</span>
+                        </div>
+                      </div>
                     </div>
-                  </div>
-                </div>
-              </Link>
+                  </a>
+                </Link>
+              )}
             </div>
           </div>
         </div>
@@ -175,11 +206,3 @@ const Home: NextPage<HomePropsType> = ({
 };
 
 export default Home;
-
-export const getServerSideProps: GetServerSideProps = async context => {
-  console.log(context);
-
-  return {
-    props: {}
-  };
-};

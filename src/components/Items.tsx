@@ -8,7 +8,7 @@ const Items: ItemType[] | any = ({ itemList }: ItemType[] | any) => {
   return (
     <ul className="w-52 sm:w-full h-full flex flex-wrap">
       {itemList?.map((myNft: ItemType, key: number) => (
-        <Link key={`link_${key}`} href={`/mypage/detail/${myNft.nftTokenId}`}>
+        <Link key={`link_${key}`} href={`/item/detail/${myNft.nftTokenId}`}>
           <li
             key={`li_${key}`}
             className="flex flex-col shadow rounded-md w-52 h-72 mb-5 sm:mr-5"
