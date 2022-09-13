@@ -17,7 +17,7 @@ import Link from 'next/link';
 import { ItemDefailType, ItemType } from '@libs/client/client';
 import { extractMetadataUrl } from '@libs/client/utils';
 import { ethers } from 'ethers';
-import CurrentPriceOwner from '@components/item/detail/CurrenPriceNotOwner';
+import CurrentPriceOwner from '@components/item/detail/CurrenPriceOwner';
 import CurrentPriceNotOwner from '@components/item/detail/CurrenPriceNotOwner';
 
 const { Panel } = Collapse;

@@ -83,13 +83,6 @@ const CurrentPriceNotOwner: CurrentPriceNotOwnerType | any = ({
             {Number(price) === 0 ? `Minted` : price}
           </Title>
         </Space>
-        <Input
-          placeholder="e.g. 0x1ed3... or destination.eth"
-          onChange={event => {
-            setAddress(event.target.value);
-          }}
-        />
-        <span className="flex justify-center items-center text-xs font-semibold -mt-1 mb-1">{`"${name}" will be transferred to ...`}</span>
         <Button
           type="primary"
           size="large"

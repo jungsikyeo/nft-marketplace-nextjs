@@ -15,13 +15,14 @@ import OpenPlanet from '@abis/OpenPlanet.json';
 
 const Home: NextPage<HomePropsType> = ({
   web3,
-  contract,
   currentAccount
 }: HomePropsType) => {
   const [trendItemList, setTrendItemList] = useState<ItemType[]>();
   const [mainImage, setMainImage] = useState<ItemType>();
   const [openPlanetContract, setOpenPlanetContract] = useState(null);
   const networkId = process.env.NEXT_PUBLIC_MARKET_NETWORK || 1661918429880;
+  const mainetURL =
+    process.env.NEXT_PUBLIC_MAINNET_URL || 'http://144.24.70.230:8545';
 
   useEffect(() => {
     const loadOpenPlanet = async (networkId: any) => {
@@ -35,6 +36,7 @@ const Home: NextPage<HomePropsType> = ({
             abi,
             address
           );
+          openPlanetContract.setProvider(mainetURL);
           setOpenPlanetContract(openPlanetContract);
         }
       }
