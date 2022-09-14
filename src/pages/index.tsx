@@ -1,4 +1,4 @@
-import { GetServerSideProps, NextPage } from 'next';
+import { NextPage } from 'next';
 import Items from '@components/Items';
 import {
   HomePropsType,
@@ -11,8 +11,6 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import { extractMetadataUrl } from '@libs/client/utils';
-import OpenPlanet from '@abis/OpenPlanet.json';
-import Web3 from 'web3';
 
 const Home: NextPage<HomePropsType> = ({
   currentAccount,
@@ -71,8 +69,6 @@ const Home: NextPage<HomePropsType> = ({
           };
           return item;
         });
-
-        console.log(items);
 
         setTrendItemList(items.sort().reverse());
       };
@@ -142,7 +138,7 @@ const Home: NextPage<HomePropsType> = ({
               {mainImage && (
                 <Link href={`/item/detail/${mainImage?.nftTokenId}`}>
                   <a>
-                    <div className="w-[35rem] shadow-2xl rounded-3xl">
+                    <div className="w-[35rem] shadow-2xl rounded-3xl overflow-hidden">
                       <Image
                         src={mainImage.imageURL}
                         width="560"
@@ -150,7 +146,7 @@ const Home: NextPage<HomePropsType> = ({
                         layout="fixed"
                         objectFit="cover"
                         objectPosition="center"
-                        className="rounded-t-3xl"
+                        className="rounded-t-3xl hover:scale-110 transition-all"
                         alt="image"
                         style={{
                           zIndex: 5

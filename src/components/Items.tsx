@@ -1,12 +1,11 @@
 import { ItemType } from '@libs/client/client';
 import { Card } from 'antd';
 import Meta from 'antd/lib/card/Meta';
-import { NextPage } from 'next';
 import Link from 'next/link';
 
 const Items: ItemType[] | any = ({ itemList }: ItemType[] | any) => {
   return (
-    <ul className="w-52 sm:w-full h-full flex flex-wrap">
+    <ul className="w-64 sm:w-full h-full flex flex-wrap mx-10">
       {itemList?.map((myNft: ItemType, key: number) => (
         <Link key={`link_${key}`} href={`/item/detail/${myNft.nftTokenId}`}>
           <li
@@ -22,12 +21,12 @@ const Items: ItemType[] | any = ({ itemList }: ItemType[] | any) => {
                 height: '100%'
               }}
               cover={
-                <div className="h-4/6">
+                <div className="overflow-hidden">
                   <img
                     alt={myNft.name}
                     width="100%"
                     height="100%"
-                    style={{ overflow: 'hidden' }}
+                    className="hover:scale-110 transition-all"
                     src={myNft.imageURL}
                   />
                 </div>
