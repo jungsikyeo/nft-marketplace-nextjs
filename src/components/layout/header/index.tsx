@@ -15,7 +15,7 @@ import {
 } from '@ant-design/icons';
 import Jazzicon, { jsNumberForAddress } from 'react-jazzicon';
 import Link from 'next/link';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useRouter } from 'next/router';
 import { HeaderPropsType } from '@libs/client/client';
 import { NextPage } from 'next';
@@ -47,7 +47,7 @@ const Header: NextPage<HeaderPropsType> = ({
     } else {
       setTitle('Home');
     }
-  }, [router.route]);
+  }, [router.route, setTitle]);
 
   const handleOpenSidebar = async () => {
     if (sidebar) {
@@ -65,10 +65,14 @@ const Header: NextPage<HeaderPropsType> = ({
     disconnectWallet();
   };
 
+  const handleLogInOut = () => {
+    isUserLoggedIn ? handleDisconnectWallet() : router.push('/login');
+  };
+
   const handleMenuLink: MenuProps['onClick'] = e => {
     setCurrent(e.key);
     if (e.key === '/wallet') {
-      setSidebar(!sidebar);
+      handleOpenSidebar();
       return;
     }
     if (e.key === '/' || e.key === '/explore') {
@@ -78,7 +82,7 @@ const Header: NextPage<HeaderPropsType> = ({
 
     if (isUserLoggedIn) {
       if (e.key === '/user') {
-        connectWallet();
+        router.push('/login');
       } else {
         router.push(e.key);
       }
@@ -115,6 +119,14 @@ const Header: NextPage<HeaderPropsType> = ({
     }
   ];
 
+  const walletAddress =
+    currentAccount?.length > 0
+      ? `${currentAccount.substring(0, 6)} . . . ${currentAccount.substring(
+          currentAccount.length - 4,
+          currentAccount.length
+        )}`
+      : '';
+
   return (
     <div>
       <Head>
@@ -125,7 +137,7 @@ const Header: NextPage<HeaderPropsType> = ({
           sidebar
             ? `-translate-x-96 -right-96 w-96`
             : `translate-x-96 right-0 w-0`
-        } absolute flex flex-col h-screen  transition-all shadow-xl bg-light top-16 mt-1 z-10`}
+        } absolute flex flex-col h-screen  transition-all shadow-xl bg-light top-16 mt-1 z-50`}
       >
         <div className={sidebar ? `block` : `hidden`}>
           <div className="flex items-center w-full h-20 border-b border-b-black border-opacity-10">
@@ -139,22 +151,12 @@ const Header: NextPage<HeaderPropsType> = ({
                     />
                   </div>
                   <span className="pl-2 text-base font-semibold">
-                    {network.networkName}
+                    {walletAddress}
                   </span>
                 </div>
               </div>
               <div className="flex items-center">
-                <span className="text-xs">
-                  {currentAccount?.length > 0
-                    ? `${currentAccount.substring(
-                        0,
-                        6
-                      )} . . . ${currentAccount.substring(
-                        currentAccount.length - 4,
-                        currentAccount.length
-                      )}`
-                    : ''}
-                </span>
+                <span className="text-xs">{walletAddress}</span>
               </div>
             </div>
           </div>
@@ -224,9 +226,7 @@ const Header: NextPage<HeaderPropsType> = ({
               </li>
               <li
                 className="w-full h-1/4 hover:shadow-md hover:rounded-b-xl hover:cursor-pointer"
-                onClick={
-                  isUserLoggedIn ? handleDisconnectWallet : connectWallet
-                }
+                onClick={handleLogInOut}
               >
                 <p className="h-full flex flex-row items-center">
                   {isUserLoggedIn ? (

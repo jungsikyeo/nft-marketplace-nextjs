@@ -2,7 +2,6 @@ import { useEffect, useState } from 'react';
 import type { GetServerSideProps, NextPage } from 'next';
 import { Title, Button } from '@components/atoms';
 import { Divider, Upload, Input, Modal, Select, InputNumber } from 'antd';
-import { File } from 'nft.storage';
 import { PlusOutlined } from '@ant-design/icons';
 import {
   beforeUpload,
@@ -12,7 +11,6 @@ import {
 } from '@libs/client/utils';
 import { UploadChangeParam, UploadFile } from 'antd/lib/upload';
 import { useRouter } from 'next/router';
-import Login from 'src/pages/login';
 import { CreateItemType, ItemType } from '@libs/client/client';
 import { PrismaClient } from '@prisma/client';
 
@@ -26,10 +24,9 @@ const messageClass = `text-xs font-semibold opacity-40 mb-2`;
 const ItemCreate: NextPage<CreateItemType> = ({
   isUserLoggedIn,
   currentAccount,
-  contract,
-  collections,
-  connectWallet
-}: CreateItemType) => {
+  openPlanetContract,
+  collections
+}: CreateItemType | any) => {
   const [loading, setLoading] = useState(true);
   const [submit, setSubmit] = useState(false);
   const [image, setImage] = useState(null);
@@ -126,13 +123,12 @@ const ItemCreate: NextPage<CreateItemType> = ({
 
     if (!loading) {
       const metadata: any = await uploadStore(item);
-      contract.methods
+      openPlanetContract.methods
         .mintNFT(currentAccount, extractMetadataUrl(metadata.url))
         .send({
           from: currentAccount
         })
         .once('receipt', (receipt: any) => {
-          console.log('receipt:', receipt);
           setSubmit(false);
           router.push('/mypage');
         });
@@ -156,145 +152,145 @@ const ItemCreate: NextPage<CreateItemType> = ({
     }
   }, [image, name, submit, currentAccount]);
 
-  return isUserLoggedIn ? (
-    <div>
-      <div className="w-full h-full flex justify-center">
-        <main className="flex flex-col items-start sm:w-1/2 md:w-2/5 w-2/3 py-11">
-          <Title type="title-content" text="Create New Item" />
-          <section className={sectionClass}>
-            <div className={`${titleClass} ${requireClass}`}>
-              Image, Video, Audio, or 3D Model
-            </div>
-            <div className={messageClass}>
-              File types supported: JPG, PNG, GIF, SVG, MP4, WEBM, MP3, WAV,
-              OGG, GLB, GLTF. Max size: 100 MB
-            </div>
-            <Upload
-              action="/"
-              listType="picture-card"
-              fileList={fileList}
-              onPreview={handlePreview}
-              onChange={handleChange}
-              maxCount={1}
-            >
-              {uploadButton}
-            </Upload>
-            <Modal
-              visible={previewVisible}
-              title={previewTitle}
-              footer={null}
-              onCancel={handleCancel}
-            >
-              <img alt="previewImage" className="w-full" src={previewImage} />
-            </Modal>
-          </section>
-          <section className={sectionClass}>
-            <div className={`${titleClass} ${requireClass}`}>Name</div>
-            <div className="w-full">
-              <Input onChange={handleName} placeholder="Item name" />
-            </div>
-          </section>
-          <section className={sectionClass}>
-            <div className={titleClass}>External link</div>
-            <div className={messageClass}>
-              OpenPlanet will include a link to this URL on this item`s detail
-              page, so that users can click to learn more about it. You are
-              welcome to link to your own webpage with more details.
-            </div>
-            <div>
-              <Input
-                placeholder="https://yoursite.io/item/123"
-                onChange={handleExternalUrl}
-              />
-            </div>
-          </section>
-          <section className={sectionClass}>
-            <div className={titleClass}>Description</div>
-            <div className={messageClass}>
-              The description will be included on the item`s detail page
-              underneath its image. Markdown syntax is supported.
-            </div>
-            <div>
-              <Input.TextArea
-                rows={4}
-                placeholder="Provide a detailed description of your item."
-                onChange={handleDescription}
-              />
-            </div>
-          </section>
-          <section className={sectionClass}>
-            <div className={titleClass}>Collection</div>
-            <div className={messageClass}>
-              This is the collection where your item will appear.
-            </div>
-            <div>
-              <Select
-                style={{ width: '100%' }}
-                placeholder="Select collection"
-                defaultValue={collections[0]}
-                onChange={handleCollection}
+  return (
+    isUserLoggedIn && (
+      <div>
+        <div className="w-full h-full flex justify-center">
+          <main className="flex flex-col items-start sm:w-1/2 md:w-2/5 w-2/3 py-11">
+            <Title type="title-content" text="Create New Item" />
+            <section className={sectionClass}>
+              <div className={`${titleClass} ${requireClass}`}>
+                Image, Video, Audio, or 3D Model
+              </div>
+              <div className={messageClass}>
+                File types supported: JPG, PNG, GIF, SVG, MP4, WEBM, MP3, WAV,
+                OGG, GLB, GLTF. Max size: 100 MB
+              </div>
+              <Upload
+                action="/"
+                listType="picture-card"
+                fileList={fileList}
+                onPreview={handlePreview}
+                onChange={handleChange}
+                maxCount={1}
               >
-                {collections &&
-                  collections.map((name: any, key: number) => (
-                    <Select.Option key={`collection_${key}`} value={name}>
-                      {name}
-                    </Select.Option>
-                  ))}
-              </Select>
-            </div>
-          </section>
-          <section className={sectionClass}>
-            <div className={titleClass}>Supply</div>
-            <div className={messageClass}>
-              The number of items that can be minted. No gas cost to you!
-            </div>
-            <div>
-              <InputNumber
-                onChange={handleSupply}
-                placeholder="Selection collection"
-                min={1}
-                defaultValue={1}
-              />
-            </div>
-          </section>
-          <section className={sectionClass}>
-            <div className={titleClass}>Blockchain</div>
-            <div>
-              <Select
-                defaultValue="ethereum"
-                style={{ width: '100%' }}
-                onChange={handleBlockchain}
+                {uploadButton}
+              </Upload>
+              <Modal
+                visible={previewVisible}
+                title={previewTitle}
+                footer={null}
+                onCancel={handleCancel}
               >
-                <Select.Option key="blockchain_1" value="ethereum">
-                  Ethereum
-                </Select.Option>
-                <Select.Option key="blockchain_2" value="solana" disabled>
-                  Solana
-                </Select.Option>
-                <Select.Option key="blockchain_3" value="polygon" disabled>
-                  Polygon
-                </Select.Option>
-                <Select.Option key="blockchain_4" value="klaytn" disabled>
-                  Klaytn
-                </Select.Option>
-              </Select>
-            </div>
-          </section>
-          <Divider />
-          <section className={`${sectionClass} mb-10`}>
-            <Button
-              type="primary"
-              className="w-24 h-12"
-              text="Create"
-              disabled={loading}
-              onClick={handleCreate}
-            />
-          </section>
-        </main>
+                <img alt="previewImage" className="w-full" src={previewImage} />
+              </Modal>
+            </section>
+            <section className={sectionClass}>
+              <div className={`${titleClass} ${requireClass}`}>Name</div>
+              <div className="w-full">
+                <Input onChange={handleName} placeholder="Item name" />
+              </div>
+            </section>
+            <section className={sectionClass}>
+              <div className={titleClass}>External link</div>
+              <div className={messageClass}>
+                OpenPlanet will include a link to this URL on this item`s detail
+                page, so that users can click to learn more about it. You are
+                welcome to link to your own webpage with more details.
+              </div>
+              <div>
+                <Input
+                  placeholder="https://yoursite.io/item/123"
+                  onChange={handleExternalUrl}
+                />
+              </div>
+            </section>
+            <section className={sectionClass}>
+              <div className={titleClass}>Description</div>
+              <div className={messageClass}>
+                The description will be included on the item`s detail page
+                underneath its image. Markdown syntax is supported.
+              </div>
+              <div>
+                <Input.TextArea
+                  rows={4}
+                  placeholder="Provide a detailed description of your item."
+                  onChange={handleDescription}
+                />
+              </div>
+            </section>
+            <section className={sectionClass}>
+              <div className={titleClass}>Collection</div>
+              <div className={messageClass}>
+                This is the collection where your item will appear.
+              </div>
+              <div>
+                <Select
+                  style={{ width: '100%' }}
+                  placeholder="Select collection"
+                  defaultValue={collections[0]}
+                  onChange={handleCollection}
+                >
+                  {collections &&
+                    collections.map((name: any, key: number) => (
+                      <Select.Option key={`collection_${key}`} value={name}>
+                        {name}
+                      </Select.Option>
+                    ))}
+                </Select>
+              </div>
+            </section>
+            <section className={sectionClass}>
+              <div className={titleClass}>Supply</div>
+              <div className={messageClass}>
+                The number of items that can be minted. No gas cost to you!
+              </div>
+              <div>
+                <InputNumber
+                  onChange={handleSupply}
+                  placeholder="Selection collection"
+                  min={1}
+                  defaultValue={1}
+                />
+              </div>
+            </section>
+            <section className={sectionClass}>
+              <div className={titleClass}>Blockchain</div>
+              <div>
+                <Select
+                  defaultValue="ethereum"
+                  style={{ width: '100%' }}
+                  onChange={handleBlockchain}
+                >
+                  <Select.Option key="blockchain_1" value="ethereum">
+                    Ethereum
+                  </Select.Option>
+                  <Select.Option key="blockchain_2" value="solana" disabled>
+                    Solana
+                  </Select.Option>
+                  <Select.Option key="blockchain_3" value="polygon" disabled>
+                    Polygon
+                  </Select.Option>
+                  <Select.Option key="blockchain_4" value="klaytn" disabled>
+                    Klaytn
+                  </Select.Option>
+                </Select>
+              </div>
+            </section>
+            <Divider />
+            <section className={`${sectionClass} mb-10`}>
+              <Button
+                type="primary"
+                className="w-24 h-12"
+                text="Create"
+                disabled={loading}
+                onClick={handleCreate}
+              />
+            </section>
+          </main>
+        </div>
       </div>
-    </div>
-  ) : (
-    <Login connectWallet={connectWallet} />
+    )
   );
 };
 

@@ -38,9 +38,8 @@ export type CreateCollectionType = {
 export type CreateItemType = {
   isUserLoggedIn: boolean;
   currentAccount: string;
-  contract: any;
+  openPlanetContract: any;
   collections: string[];
-  connectWallet: any;
 };
 
 export type ItemTokenDataType = {
@@ -49,12 +48,13 @@ export type ItemTokenDataType = {
 };
 
 export type ItemDefailType = {
-  contract: any;
+  openPlanetContract: any;
   currentAccount: string;
+  isUserLoggedIn: boolean;
 };
 
 export type MyPagePropsType = {
-  contract: any;
+  openPlanetContract: any;
   currentAccount: string;
   network: {
     networkId: string;
@@ -67,6 +67,7 @@ export type ExplorePropsType = {
     networkId: string;
   };
   currentAccount: string;
+  isUserLoggedIn: boolean;
 };
 
 export type LoginPropsType = {
@@ -75,8 +76,8 @@ export type LoginPropsType = {
 
 export type HomePropsType = {
   web3: any;
-  contract: any;
   openPlanetContract: any;
+  isUserLoggedIn: boolean;
   currentAccount: string;
   network: {
     networkId: string;

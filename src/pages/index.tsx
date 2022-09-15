@@ -11,20 +11,23 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import { extractMetadataUrl } from '@libs/client/utils';
+import { useRouter } from 'next/router';
+
+const networkId = process.env.NEXT_PUBLIC_MARKET_NETWORK || 1661918429880;
 
 const Home: NextPage<HomePropsType> = ({
   currentAccount,
+  isUserLoggedIn,
   openPlanetContract
 }: HomePropsType) => {
   const [trendItemList, setTrendItemList] = useState<ItemType[]>();
   const [mainImage, setMainImage] = useState<ItemType>();
-  const networkId = process.env.NEXT_PUBLIC_MARKET_NETWORK || 1661918429880;
+  const router = useRouter();
 
   useEffect(() => {
     trendItemList &&
       trendItemList.map((item, key) => {
         if (key === 0) {
-          console.log(item);
           setMainImage({
             nftTokenId: item.nftTokenId,
             nftTokenURI: item.nftTokenURI,
@@ -78,6 +81,13 @@ const Home: NextPage<HomePropsType> = ({
     }
   }, [openPlanetContract]);
 
+  const handleCreate = () => {
+    if (isUserLoggedIn) {
+      router.push(`/item/create/${networkId}/${currentAccount}`);
+    } else {
+      router.push('/login');
+    }
+  };
   return (
     <div className="w-full h-auto flex flex-col justify-between">
       <div className="w-full h-[50rem] relative opacity-30">
@@ -93,8 +103,6 @@ const Home: NextPage<HomePropsType> = ({
         {mainImage && (
           <Image
             src={mainImage.imageURL}
-            width="100%"
-            height="100%"
             layout="fill"
             objectFit="cover"
             objectPosition="center"
@@ -127,7 +135,7 @@ const Home: NextPage<HomePropsType> = ({
                 </Button>
                 <Button
                   type="primary"
-                  href={`/item/create/${networkId}/${currentAccount}`}
+                  onClick={handleCreate}
                   className="w-36 h-14 bg-white border-white text-info ml-5 flex justify-center items-center"
                 >
                   Create
@@ -146,11 +154,8 @@ const Home: NextPage<HomePropsType> = ({
                         layout="fixed"
                         objectFit="cover"
                         objectPosition="center"
-                        className="rounded-t-3xl hover:scale-110 transition-all"
+                        className="rounded-t-3xl hover:scale-110 transition-all z-10"
                         alt="image"
-                        style={{
-                          zIndex: 5
-                        }}
                       />
 
                       <div className="flex">

@@ -4,13 +4,20 @@ import { useState } from 'react';
 import matamask from '/public/metamask-icon.png';
 import { Spin } from 'antd';
 import { LoginPropsType } from '@libs/client/client';
+import { useRouter } from 'next/router';
 
 const Login: NextPage<LoginPropsType> = ({ connectWallet }: LoginPropsType) => {
   const [loading, setLoading] = useState(false);
+  const router = useRouter();
 
   const handleMetamask = async () => {
     setLoading(true);
-    await connectWallet();
+    const ifConnectWallet = await connectWallet();
+    if (!ifConnectWallet) {
+      setLoading(false);
+    } else {
+      router.push('/');
+    }
   };
 
   return (

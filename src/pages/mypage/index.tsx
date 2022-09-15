@@ -18,7 +18,7 @@ import {
 const { TabPane } = Tabs;
 
 const MyPage: NextPage<MyPagePropsType> = ({
-  contract,
+  openPlanetContract,
   currentAccount,
   network
 }: MyPagePropsType) => {
@@ -27,11 +27,10 @@ const MyPage: NextPage<MyPagePropsType> = ({
     useState<CollectionType[]>(ICollections);
 
   useEffect(() => {
-    if (contract && currentAccount && network) {
-      const loadMyItemList = async (contract: any) => {
-        const NFTsTokenData: ItemTokenDataType[] = await contract.methods
-          .getNftTokens(currentAccount)
-          .call();
+    if (openPlanetContract && currentAccount && network) {
+      const loadMyItemList = async (openPlanetContract: any) => {
+        const NFTsTokenData: ItemTokenDataType[] =
+          await openPlanetContract.methods.getNftTokens(currentAccount).call();
 
         const NFTsMetadata = await Promise.all(
           NFTsTokenData.filter(res =>
@@ -56,10 +55,9 @@ const MyPage: NextPage<MyPagePropsType> = ({
           };
           return item;
         });
-        console.log(items);
         setMyItemList(items.sort().reverse());
       };
-      loadMyItemList(contract);
+      loadMyItemList(openPlanetContract);
 
       const loadMyCollectionList = async () => {
         await fetch('/api/collection/list', {
@@ -98,7 +96,6 @@ const MyPage: NextPage<MyPagePropsType> = ({
                     (res: CollectionType) =>
                       res.featuredImageMetadata &&
                       Axios.get(res.featuredImageMetadata).then(({ data }) => {
-                        console.log(data.image);
                         return Object.assign(res, {
                           featuredImageUrl: data.image
                         });
@@ -118,7 +115,7 @@ const MyPage: NextPage<MyPagePropsType> = ({
       setMyItemList([]);
       setMyCollectionList([]);
     }
-  }, [contract, currentAccount, network]);
+  }, [openPlanetContract, currentAccount, network]);
 
   const addressId =
     currentAccount?.length > 0

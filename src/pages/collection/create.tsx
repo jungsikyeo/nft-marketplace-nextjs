@@ -246,7 +246,6 @@ const CollectionCreate: NextPage<CreateCollectionType> = ({
       })
         .then(response => response.json().catch(() => {}))
         .then(data => {
-          console.log(data);
           message.success('create collection success!');
           router.push('/mypage');
         })

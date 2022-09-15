@@ -1,7 +1,7 @@
 import { CollectionType } from '@libs/client/client';
 import { Card } from 'antd';
 import Meta from 'antd/lib/card/Meta';
-import { NextPage } from 'next';
+import Image from 'next/image';
 import Link from 'next/link';
 
 const Collections: CollectionType[] | any = ({
@@ -26,27 +26,21 @@ const Collections: CollectionType[] | any = ({
                 }}
                 cover={
                   collection?.featuredImageUrl ? (
-                    <img
+                    <Image
                       alt={collection?.name}
-                      className="bg-fixed"
-                      style={{
-                        width: '480px',
-                        height: '280px',
-                        objectFit: 'cover'
-                      }}
+                      width="480"
+                      height="280"
+                      className="bg-fixed object-cover"
                       src={`https://ipfs.io/ipfs/${
                         collection?.featuredImageUrl?.split('//')[1]
                       }`}
                     />
                   ) : (
-                    <img
+                    <Image
                       alt={collection?.name}
-                      className="bg-fixed"
-                      style={{
-                        width: '480px',
-                        height: '280px',
-                        objectFit: 'cover'
-                      }}
+                      width="480"
+                      height="280"
+                      className="bg-fixed object-cover"
                       src={`https://ipfs.io/ipfs/${
                         collection?.logoImageUrl?.split('//')[1]
                       }`}
@@ -56,7 +50,7 @@ const Collections: CollectionType[] | any = ({
               >
                 <div className="flex">
                   <div className="relative left-0 -top-10 flex border-4 border-white shadow-md rounded-2xl">
-                    <img
+                    <Image
                       alt={collection?.name}
                       width="90"
                       height="90"

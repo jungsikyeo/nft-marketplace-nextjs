@@ -14,13 +14,14 @@ const { Title } = Typography;
 
 const Explore: NextPage<ExplorePropsType> = ({
   network,
-  currentAccount
+  currentAccount,
+  isUserLoggedIn
 }: ExplorePropsType) => {
   const [allList, setAllList] = useState<CollectionType[]>(ICollections);
   const [myList, setMyList] = useState<CollectionType[]>(ICollections);
 
   useEffect(() => {
-    if (network && currentAccount) {
+    if (network) {
       const getAllCollection = async () => {
         await fetch('/api/collection/list', {
           method: 'POST',
@@ -57,7 +58,6 @@ const Explore: NextPage<ExplorePropsType> = ({
                     (res: CollectionType) =>
                       res.featuredImageMetadata &&
                       Axios.get(res.featuredImageMetadata).then(({ data }) => {
-                        console.log(data.image);
                         return Object.assign(res, {
                           featuredImageUrl: data.image
                         });
@@ -66,7 +66,6 @@ const Explore: NextPage<ExplorePropsType> = ({
               );
 
               const myList = data.collections.filter((res: any) => {
-                console.log(res.account === currentAccount);
                 return res.account === currentAccount;
               });
 
@@ -100,9 +99,11 @@ const Explore: NextPage<ExplorePropsType> = ({
                 <TabPane tab="All" key="1">
                   <Collections collectionList={allList} />
                 </TabPane>
-                <TabPane tab="My collections" key="2">
-                  <Collections collectionList={myList} />
-                </TabPane>
+                {isUserLoggedIn && (
+                  <TabPane tab="My collections" key="2">
+                    <Collections collectionList={myList} />
+                  </TabPane>
+                )}
               </Tabs>
             </div>
           </div>

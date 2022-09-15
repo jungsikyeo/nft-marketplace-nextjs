@@ -56,8 +56,9 @@ const data: any[] = [];
 // }
 
 const NftDetail: NextPage<ItemDefailType> = ({
-  contract,
-  currentAccount
+  openPlanetContract,
+  currentAccount,
+  isUserLoggedIn
 }: ItemDefailType) => {
   const router = useRouter();
   const [name, setName] = useState('');
@@ -73,38 +74,45 @@ const NftDetail: NextPage<ItemDefailType> = ({
 
   useEffect(() => {
     const getNFTList = async () => {
-      if (currentAccount && contract && router.query.id) {
+      if (openPlanetContract && router.query.id) {
         const tokenId: number = Number(router.query.id);
-        const tokenUri = await contract.methods.tokenURI(tokenId).call();
-        console.log('tokenUri', tokenUri);
+        const tokenUri = await openPlanetContract.methods
+          .tokenURI(tokenId)
+          .call();
         await Axios.get(tokenUri).then(async ({ data }) => {
           setName(data.name);
           setImageUrl(extractMetadataUrl(data.image));
           setCollectionName(data.collection);
           setDescription(data.description);
         });
-        const price: string = await contract.methods
+        const price: string = await openPlanetContract.methods
           .getNftTokenPrice(tokenId)
           .call();
         setPrice(Number(ethers.utils.formatEther(String(price))));
         setSellPrice(Number(ethers.utils.formatEther(String(price))));
 
-        const result = await contract.methods
-          .getNftTokens(currentAccount)
-          .call({ from: currentAccount });
+        if (currentAccount) {
+          const result = await openPlanetContract.methods
+            .getNftTokens(currentAccount)
+            .call({ from: currentAccount });
 
-        const isOwner =
-          result.filter((res: ItemType) => res.nftTokenId === router.query.id)
-            .length > 0
-            ? true
-            : false;
-        setIsOwner(isOwner);
+          const isOwner =
+            result.filter((res: ItemType) => res.nftTokenId === router.query.id)
+              .length > 0
+              ? true
+              : false;
+          setIsOwner(isOwner);
+        }
       }
     };
     getNFTList();
-  }, [currentAccount, contract, router.query.id]);
+  }, [currentAccount, openPlanetContract, router.query.id]);
 
-  const handleBuyNow = async () => {};
+  const handleBuyNow = async () => {
+    if (!isUserLoggedIn) {
+      router.push('/login');
+    }
+  };
 
   const handleMakeOffer = async () => {
     alert('This is not ready yet.');
@@ -124,7 +132,7 @@ const NftDetail: NextPage<ItemDefailType> = ({
       loginWarningNoti();
       return;
     }
-    contract.methods
+    openPlanetContract.methods
       .transferFrom(currentAccount, address, router.query.id)
       .send({
         from: currentAccount,
@@ -138,7 +146,7 @@ const NftDetail: NextPage<ItemDefailType> = ({
   const handleListing = async () => {
     const isSell = await handleSellPrice(Number(sellPrice));
     if (isSell) {
-      const result = await contract.methods
+      const result = await openPlanetContract.methods
         .getNftTokens(currentAccount)
         .call({ from: currentAccount });
 
@@ -150,7 +158,7 @@ const NftDetail: NextPage<ItemDefailType> = ({
       setIsOwner(isOwner);
 
       if (isOwner) {
-        await contract.methods
+        await openPlanetContract.methods
           .addToMarket(
             router.query.id,
             ethers.utils.parseEther(String(sellPrice))
