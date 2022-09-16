@@ -96,6 +96,25 @@ const BaseLayout: NextPage<AppLayoutPropsType> = ({
       });
 
       if (accounts.length > 0) {
+        await fetch('/api/user/create', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            networkId: networkId,
+            account: accounts[0]
+          })
+        })
+          .then(response => response.json().catch(() => {}))
+          .then(data => {
+            console.log(data);
+          })
+          .catch(error => {
+            message.error('create user error!');
+            console.log(error);
+            router.push('/login');
+          });
         setCurrentAccount(accounts[0]);
         setIsUserLoggedIn(true);
 
