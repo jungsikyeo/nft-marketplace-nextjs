@@ -22,9 +22,9 @@ const titleClass = `text-sm font-bold mb-2`;
 const messageClass = `text-xs font-semibold opacity-40 mb-2`;
 
 const ItemCreate: NextPage<CreateItemType> = ({
+  userContract,
   isUserLoggedIn,
   currentAccount,
-  openPlanetContract,
   collections
 }: CreateItemType | any) => {
   const [loading, setLoading] = useState(true);
@@ -123,8 +123,8 @@ const ItemCreate: NextPage<CreateItemType> = ({
 
     if (!loading) {
       const metadata: any = await uploadStore(item);
-      openPlanetContract.methods
-        .mintNFT(currentAccount, extractMetadataUrl(metadata.url))
+      userContract.methods
+        .mintNFT(currentAccount, extractMetadataUrl(metadata.url), collection)
         .send({
           from: currentAccount
         })

@@ -11,7 +11,7 @@ const Collections: CollectionType[] | any = ({
     <ul className="w-[30rem] sm:w-full h-full flex flex-wrap">
       {collectionList?.length > 0 &&
         collectionList?.map((collection: any, key: number) => (
-          <Link key={`link_${key}`} href={`/explore/${collection?.name}`}>
+          <Link key={`link_${key}`} href={`/collection/${collection?.name}`}>
             <li
               key={`li_${key}`}
               className="flex flex-col shadow rounded-md w-[30rem] h-96 mb-5 sm:mr-5"

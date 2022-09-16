@@ -4,6 +4,8 @@ export type CollectionType = {
   logoImageMetadata?: string;
   featuredImageUrl?: string;
   featuredImageMetadata?: string;
+  bannerImageUrl?: string;
+  bannerImageMetadata?: string;
   account: string;
   networkId: string;
   slug: string;
@@ -28,23 +30,25 @@ export type ItemType = {
 export type CreateCollectionType = {
   isUserLoggedIn: boolean;
   currentAccount: string;
-  network: {
-    networkId: string;
-    networkName: string;
-  };
   connectWallet: any;
 };
 
 export type CreateItemType = {
+  userContract: any;
   isUserLoggedIn: boolean;
   currentAccount: string;
-  openPlanetContract: any;
+  etwork: {
+    networkId: string;
+    networkName: string;
+  };
   collections: string[];
+  connectWallet: any;
 };
 
 export type ItemTokenDataType = {
   nftTokenId: number;
   nftTokenURI: string;
+  nftTokenCollection: string;
 };
 
 export type ItemDefailType = {
@@ -54,6 +58,15 @@ export type ItemDefailType = {
 };
 
 export type MyPagePropsType = {
+  openPlanetContract: any;
+  currentAccount: string;
+  network: {
+    networkId: string;
+    networkName: string;
+  };
+};
+
+export type ExploreCollectionType = {
   openPlanetContract: any;
   currentAccount: string;
   network: {

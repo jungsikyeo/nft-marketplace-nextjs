@@ -13,7 +13,7 @@ import { useEffect, useState } from 'react';
 import { extractMetadataUrl } from '@libs/client/utils';
 import { useRouter } from 'next/router';
 
-const networkId = process.env.NEXT_PUBLIC_MARKET_NETWORK || 1661918429880;
+const networkId = process.env.NEXT_PUBLIC_MARKET_NETWORK || 1663321162161;
 
 const Home: NextPage<HomePropsType> = ({
   currentAccount,
@@ -81,6 +81,10 @@ const Home: NextPage<HomePropsType> = ({
     }
   }, [openPlanetContract]);
 
+  const handleExplore = () => {
+    router.push('/explore');
+  };
+
   const handleCreate = () => {
     if (isUserLoggedIn) {
       router.push(`/item/create/${networkId}/${currentAccount}`);
@@ -128,7 +132,7 @@ const Home: NextPage<HomePropsType> = ({
               <div className="flex justify-center xl:justify-start mt-5">
                 <Button
                   type="primary"
-                  href="/explore"
+                  onClick={handleExplore}
                   className="w-36 h-14 bg-info border-info flex justify-center items-center"
                 >
                   Explore
@@ -174,9 +178,9 @@ const Home: NextPage<HomePropsType> = ({
           </div>
         </div>
         <div className="flex flex-col items-center">
-          <div className="w-full xl:w-1/2 flex flex-col items-center">
+          <div className="w-full xl:w-4/5 flex flex-col items-center">
             <div className="mt-20 text-2xl font-semibold">Recently Items</div>
-            <div className="mt-5">
+            <div className="mt-5 mx-10">
               {trendItemList && <Items itemList={trendItemList} />}
             </div>
           </div>

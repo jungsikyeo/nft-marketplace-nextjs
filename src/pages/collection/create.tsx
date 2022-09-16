@@ -227,6 +227,8 @@ const CollectionCreate: NextPage<CreateCollectionType> = ({
           })
         : null;
 
+      console.log(logoMetadata, featuredMetadata, bannerMetadata);
+
       await fetch('/api/collection/create', {
         method: 'POST',
         headers: {
@@ -235,9 +237,9 @@ const CollectionCreate: NextPage<CreateCollectionType> = ({
         body: JSON.stringify({
           networkId: collection.networkId,
           account: collection.account,
-          logoImageMetadata: extractMetadataUrl(logoMetadata.image),
-          featuredImageMetadata: extractMetadataUrl(featuredMetadata.image),
-          bannerImageMetadata: extractMetadataUrl(bannerMetadata.image),
+          logoImageMetadata: extractMetadataUrl(logoMetadata.url),
+          featuredImageMetadata: extractMetadataUrl(featuredMetadata.url),
+          bannerImageMetadata: extractMetadataUrl(bannerMetadata.url),
           name: collection.name,
           description: collection.description,
           slug: collection.slug,

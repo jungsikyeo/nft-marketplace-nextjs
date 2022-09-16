@@ -1,7 +1,6 @@
 import { Button } from 'antd';
 import type { NextPage } from 'next';
 import { useRouter } from 'next/router';
-import { useEffect } from 'react';
 
 const Custom404: NextPage = ({}) => {
   const router = useRouter();

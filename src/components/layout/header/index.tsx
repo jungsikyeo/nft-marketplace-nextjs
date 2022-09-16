@@ -15,7 +15,7 @@ import {
 } from '@ant-design/icons';
 import Jazzicon, { jsNumberForAddress } from 'react-jazzicon';
 import Link from 'next/link';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
 import { HeaderPropsType } from '@libs/client/client';
 import { NextPage } from 'next';

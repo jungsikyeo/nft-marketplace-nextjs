@@ -13,6 +13,10 @@ contract OpenPlanet is ERC721URIStorage, Ownable, ERC721Enumerable {
 
   constructor() public ERC721('openPlanetNFT', 'OPNFT') {}
 
+  mapping(uint256 => uint256) public nftTokenPrices;
+  mapping(uint256 => string) public nftTokenCollections;
+  uint256[] public onSaleNftTokenArray;
+
   function _beforeTokenTransfer(
     address from,
     address to,
@@ -43,16 +47,24 @@ contract OpenPlanet is ERC721URIStorage, Ownable, ERC721Enumerable {
     return super.tokenURI(tokenId);
   }
 
-  function mintNFT(address recipient, string memory tokenURI)
-    public
-    returns (uint256)
-  {
+  function mintNFT(
+    address recipient,
+    string memory tokenURI,
+    string memory collectionName
+  ) public returns (uint256) {
     _tokenIds.increment();
 
     uint256 newItemId = _tokenIds.current();
     _mint(recipient, newItemId);
     _setTokenURI(newItemId, tokenURI);
+    _setCollection(newItemId, collectionName);
     return newItemId;
+  }
+
+  function _setCollection(uint256 _tokenId, string memory collectionName)
+    private
+  {
+    nftTokenCollections[_tokenId] = collectionName;
   }
 
   function listUserNFTs(address owner)
@@ -72,7 +84,23 @@ contract OpenPlanet is ERC721URIStorage, Ownable, ERC721Enumerable {
   struct NftTokenData {
     uint256 nftTokenId;
     string nftTokenURI;
-    //uint price ;
+    string nftTokenCollection;
+  }
+
+  function getCollectionTokens() public view returns (NftTokenData[] memory) {
+    uint256 totalLength = totalSupply();
+    NftTokenData[] memory nftTokenData = new NftTokenData[](totalLength);
+    for (uint256 i = 0; i < totalLength; i++) {
+      uint256 nftTokenId = tokenByIndex(i);
+      string memory nftTokenURI = tokenURI(nftTokenId);
+      nftTokenData[i] = NftTokenData(
+        nftTokenId,
+        nftTokenURI,
+        getCollectionName(nftTokenId)
+      );
+    }
+
+    return nftTokenData;
   }
 
   function getNftTokens(address _nftTokenOwner)
@@ -85,16 +113,15 @@ contract OpenPlanet is ERC721URIStorage, Ownable, ERC721Enumerable {
     for (uint256 i = 0; i < balanceLength; i++) {
       uint256 nftTokenId = tokenOfOwnerByIndex(_nftTokenOwner, i);
       string memory nftTokenURI = tokenURI(nftTokenId);
-      nftTokenData[i] = NftTokenData(nftTokenId, nftTokenURI);
-      // uint tokenPrice = getNftTokenPrice(nftTokenId);
-      // nftTokenData[i] = NftTokenData(nftTokenId , nftTokenURI, tokenPrice );
+      nftTokenData[i] = NftTokenData(
+        nftTokenId,
+        nftTokenURI,
+        getCollectionName(nftTokenId)
+      );
     }
 
     return nftTokenData;
   }
-
-  mapping(uint256 => uint256) public nftTokenPrices;
-  uint256[] public onSaleNftTokenArray;
 
   function addToMarket(uint256 _tokenId, uint256 _price) public {
     // nft를 소유한 계정에서만 판매등록 가능
@@ -125,11 +152,22 @@ contract OpenPlanet is ERC721URIStorage, Ownable, ERC721Enumerable {
 
     for (uint256 i = 0; i < onSaleNftToken.length; i++) {
       uint256 tokenId = onSaleNftToken[i];
-      uint256 tokenPrice = getNftTokenPrice(tokenId);
-      onSaleNftTokens[i] = NftTokenData(tokenId, tokenURI(tokenId));
+      onSaleNftTokens[i] = NftTokenData(
+        tokenId,
+        tokenURI(tokenId),
+        getCollectionName(tokenId)
+      );
     }
 
     return onSaleNftTokens;
+  }
+
+  function getCollectionName(uint256 _tokenId)
+    public
+    view
+    returns (string memory)
+  {
+    return nftTokenCollections[_tokenId];
   }
 
   function getSaleNftToken() public view returns (uint256[] memory) {

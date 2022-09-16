@@ -5,7 +5,7 @@ import Link from 'next/link';
 
 const Items: ItemType[] | any = ({ itemList }: ItemType[] | any) => {
   return (
-    <ul className="w-64 sm:w-full h-full flex flex-wrap mx-10">
+    <ul className="w-64 sm:w-full h-full flex flex-wrap">
       {itemList?.map((myNft: ItemType, key: number) => (
         <Link key={`link_${key}`} href={`/item/detail/${myNft.nftTokenId}`}>
           <li

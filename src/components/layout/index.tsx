@@ -12,9 +12,9 @@ import { useRouter } from 'next/router';
 import { AppLayoutPropsType, IWindow } from '@libs/client/client';
 import { NextPage } from 'next';
 
-const networkId = process.env.NEXT_PUBLIC_MARKET_NETWORK || '1661918429880';
+const networkId = process.env.NEXT_PUBLIC_MARKET_NETWORK || '1663321162161';
 const mainetURL =
-  process.env.NEXT_PUBLIC_MAINNET_URL || 'http://144.24.70.230:8545';
+  process.env.NEXT_PUBLIC_MAINNET_URL || 'https://ganache.yjsworld.tk';
 
 const BaseLayout: NextPage<AppLayoutPropsType> = ({
   children
@@ -28,13 +28,14 @@ const BaseLayout: NextPage<AppLayoutPropsType> = ({
   const [isUserLoggedIn, setIsUserLoggedIn] = useState(false);
   const [currentAccount, setCurrentAccount] = useState('');
   const [openPlanetContract, setOpenPlanetContract] = useState(null);
+  const [userContract, setUserContract] = useState(null);
   const [balance, setbalance] = useState('');
   const [sidebar, setSidebar] = useState(false);
   const [nightMode, setNightMode] = useState(false);
   const router = useRouter();
 
   useEffect(() => {
-    const loadOpenPlanet = async (networkId: any) => {
+    const loadOpenPlanetContract = async (networkId: any) => {
       if (networkId) {
         const web3 = new Web3();
         web3.setProvider(mainetURL);
@@ -51,7 +52,21 @@ const BaseLayout: NextPage<AppLayoutPropsType> = ({
         }
       }
     };
-    loadOpenPlanet(networkId);
+    loadOpenPlanetContract(networkId);
+
+    const loadUserContract = async (networkId: any) => {
+      const ethereum: IWindow['ethereum'] = (window as any).ethereum;
+      const web = new Web3(ethereum);
+      const newNetworks: any = OpenPlanet.networks;
+      const networkData: any = newNetworks[networkId];
+      if (networkData) {
+        const abi: any = OpenPlanet.abi;
+        const address: string = networkData.address;
+        const newContract: any = new web.eth.Contract(abi, address);
+        setUserContract(newContract);
+      }
+    };
+    loadUserContract(networkId);
   }, []);
 
   const connectWallet = async () => {
@@ -146,10 +161,10 @@ const BaseLayout: NextPage<AppLayoutPropsType> = ({
   };
 
   useEffect(() => {
-    (window as any).ethereum?.on('networkChanged', handleNetworkChanged);
+    (window as any).ethereum?.on('chainChanged', handleNetworkChanged);
     return () => {
       (window as any).ethereum?.removeListener(
-        'networkChanged',
+        'chainChanged',
         handleNetworkChanged
       );
     };
@@ -191,6 +206,7 @@ const BaseLayout: NextPage<AppLayoutPropsType> = ({
         isUserLoggedIn,
         currentAccount,
         openPlanetContract,
+        userContract,
         network,
         connectWallet
       })}
