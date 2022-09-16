@@ -67,6 +67,10 @@ const BaseLayout: NextPage<AppLayoutPropsType> = ({
       }
     };
     loadUserContract(networkId);
+
+    if (!isUserLoggedIn) {
+      connectWallet();
+    }
   }, []);
 
   const connectWallet = async () => {

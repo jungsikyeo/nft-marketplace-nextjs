@@ -130,7 +130,7 @@ const ItemCreate: NextPage<CreateItemType> = ({
         })
         .once('receipt', (receipt: any) => {
           setSubmit(false);
-          router.push('/mypage');
+          router.push('/mypage/1');
         });
     }
   };

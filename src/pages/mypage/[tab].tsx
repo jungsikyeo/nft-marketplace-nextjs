@@ -1,6 +1,6 @@
 import type { NextPage } from 'next';
 import { message, Tabs } from 'antd';
-import { useEffect, useState } from 'react';
+import { useEffect, useReducer, useState } from 'react';
 import Axios from 'axios';
 import Jazzicon, { jsNumberForAddress } from 'react-jazzicon';
 import { PaperClipOutlined } from '@ant-design/icons';
@@ -14,6 +14,7 @@ import {
   ItemType,
   MyPagePropsType
 } from '@libs/client/client';
+import { useRouter } from 'next/router';
 
 const { TabPane } = Tabs;
 
@@ -25,6 +26,9 @@ const MyPage: NextPage<MyPagePropsType> = ({
   const [myItemList, setMyItemList] = useState<ItemType[]>([]);
   const [myCollectionList, setMyCollectionList] =
     useState<CollectionType[]>(ICollections);
+  const router = useRouter();
+  const tab: string | undefined | any = router.query.tab || '1';
+  console.log(tab);
 
   useEffect(() => {
     if (openPlanetContract && currentAccount && network) {
@@ -159,7 +163,7 @@ const MyPage: NextPage<MyPagePropsType> = ({
           <div className="w-full h-full mt-5">
             <div className="w-full h-auto flex justify-center sm:block sm:justify-start">
               <Tabs
-                defaultActiveKey="1"
+                defaultActiveKey="2"
                 className="w-full h-full text-base font-semibold"
               >
                 <TabPane tab="Items" key="1">
@@ -168,7 +172,6 @@ const MyPage: NextPage<MyPagePropsType> = ({
                 <TabPane tab="Collections" key="2">
                   <Collections collectionList={myCollectionList} />
                 </TabPane>
-                <TabPane tab="Activities" key="3"></TabPane>
               </Tabs>
             </div>
           </div>

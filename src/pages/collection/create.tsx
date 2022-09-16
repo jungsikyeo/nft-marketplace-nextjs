@@ -238,8 +238,10 @@ const CollectionCreate: NextPage<CreateCollectionType> = ({
           networkId: collection.networkId,
           account: collection.account,
           logoImageMetadata: extractMetadataUrl(logoMetadata.url),
-          featuredImageMetadata: extractMetadataUrl(featuredMetadata.url),
-          bannerImageMetadata: extractMetadataUrl(bannerMetadata.url),
+          featuredImageMetadata:
+            featuredMetadata && extractMetadataUrl(featuredMetadata.url),
+          bannerImageMetadata:
+            bannerMetadata && extractMetadataUrl(bannerMetadata.url),
           name: collection.name,
           description: collection.description,
           slug: collection.slug,
@@ -249,7 +251,7 @@ const CollectionCreate: NextPage<CreateCollectionType> = ({
         .then(response => response.json().catch(() => {}))
         .then(data => {
           message.success('create collection success!');
-          router.push('/mypage');
+          router.push('/mypage/2');
         })
         .catch(error => {
           message.error('create collection error!');

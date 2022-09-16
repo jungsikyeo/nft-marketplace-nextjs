@@ -111,7 +111,7 @@ const Header: NextPage<HeaderPropsType> = ({
     },
     {
       label: <UserOutlined className="text-2xl" />,
-      key: isUserLoggedIn ? '/mypage' : '/user'
+      key: isUserLoggedIn ? '/mypage/1' : '/user'
     },
     {
       label: <WalletOutlined className="text-2xl" />,
