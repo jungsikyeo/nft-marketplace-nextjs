@@ -57,6 +57,7 @@ const data: any[] = [];
 
 const NftDetail: NextPage<ItemDefailType> = ({
   openPlanetContract,
+  userContract,
   currentAccount,
   isUserLoggedIn
 }: ItemDefailType) => {
@@ -111,6 +112,15 @@ const NftDetail: NextPage<ItemDefailType> = ({
   const handleBuyNow = async () => {
     if (!isUserLoggedIn) {
       router.push('/login');
+    } else {
+      userContract.methods
+        .buyNft(router.query.id)
+        .send({
+          from: currentAccount,
+          value: ethers.utils.parseEther(String(price)),
+          gas: 250000
+        })
+        .once('receipt', (receipt: any) => router.push('/mypage/1'));
     }
   };
 

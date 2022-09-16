@@ -28,7 +28,6 @@ const MyPage: NextPage<MyPagePropsType> = ({
     useState<CollectionType[]>(ICollections);
   const router = useRouter();
   const tab: string | undefined | any = router.query.tab || '1';
-  console.log(tab);
 
   useEffect(() => {
     if (openPlanetContract && currentAccount && network) {
@@ -163,7 +162,7 @@ const MyPage: NextPage<MyPagePropsType> = ({
           <div className="w-full h-full mt-5">
             <div className="w-full h-auto flex justify-center sm:block sm:justify-start">
               <Tabs
-                defaultActiveKey="2"
+                defaultActiveKey={tab}
                 className="w-full h-full text-base font-semibold"
               >
                 <TabPane tab="Items" key="1">

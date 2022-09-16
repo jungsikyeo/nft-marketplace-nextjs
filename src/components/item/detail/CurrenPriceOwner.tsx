@@ -77,7 +77,7 @@ const CurrentPriceOwner: CurrentPriceOwnerType | any = ({
             </svg>
           </div>
           <Title level={2} className="h-full flex justify-center mb-0">
-            {Number(price) === 0 ? `Minted` : price}
+            {Number(price) === 0 ? `-` : price}
           </Title>
         </Space>
         <Input

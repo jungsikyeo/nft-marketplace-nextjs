@@ -53,6 +53,7 @@ export type ItemTokenDataType = {
 
 export type ItemDefailType = {
   openPlanetContract: any;
+  userContract: any;
   currentAccount: string;
   isUserLoggedIn: boolean;
 };
