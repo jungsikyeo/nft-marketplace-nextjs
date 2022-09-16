@@ -30,6 +30,10 @@ export type ItemType = {
 export type CreateCollectionType = {
   isUserLoggedIn: boolean;
   currentAccount: string;
+  network: {
+    networkId: string;
+    networkName: string;
+  };
   connectWallet: any;
 };
 
@@ -37,7 +41,7 @@ export type CreateItemType = {
   userContract: any;
   isUserLoggedIn: boolean;
   currentAccount: string;
-  etwork: {
+  network: {
     networkId: string;
     networkName: string;
   };
