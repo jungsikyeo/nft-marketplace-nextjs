@@ -1,6 +1,6 @@
 import React from 'react';
 import { Modal as AModal } from 'antd';
-import {Props} from './modal.props'
+import { Props } from './modal.props';
 
 const Modal: React.FC<Props> = ({
   visible,

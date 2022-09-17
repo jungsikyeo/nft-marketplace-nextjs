@@ -79,7 +79,7 @@ const ExploreCollection: NextPage<ExploreCollectionType> = ({
               if (data.collection.logoImageMetadata) {
                 Axios.get(data.collection.logoImageMetadata).then(({ data }) =>
                   setLogoImage(
-                    <div className="border-[6px] border-white rounded-2xl">
+                    <div className="border-[6px] border-white dark:border-deepdark rounded-2xl">
                       <Image
                         src={extractMetadataUrl(data.image)}
                         width="150"
@@ -133,7 +133,9 @@ const ExploreCollection: NextPage<ExploreCollectionType> = ({
       <div className="flex sm:flex-row flex-col w-42 mt-16">
         <div className="flex flex-col justify-center mt-2 sm:mt-0 sm:ml-10">
           <div className="text-3xl font-semibold">{router.query.id}</div>
-          <div className="text-base font-normal mt-5">{description}</div>
+          <div className="text-base font-normal mt-5 dark:text-grey2">
+            {description}
+          </div>
         </div>
       </div>
       <div className="w-full h-screen flex justify-start">

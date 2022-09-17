@@ -163,7 +163,7 @@ const MyPage: NextPage<MyPagePropsType> = ({
             <div className="w-full h-auto flex justify-center sm:block sm:justify-start">
               <Tabs
                 defaultActiveKey={tab}
-                className="w-full h-full text-base font-semibold"
+                className="w-full h-full text-base font-semibold dark:text-white"
               >
                 <TabPane tab="Items" key="1">
                   <Items itemList={myItemList} />

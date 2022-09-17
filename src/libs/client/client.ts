@@ -114,9 +114,9 @@ export type HeaderPropsType = {
   currentAccount: string;
   balance: string;
   sidebar: boolean;
-  nightMode: boolean;
+  theme: string | any;
   setSidebar: any;
-  setNightMode: any;
+  setTheme: any;
   connectWallet: any;
   disconnectWallet: any;
 };

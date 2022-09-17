@@ -14,7 +14,7 @@ const Collections: CollectionType[] | any = ({
           <Link key={`link_${key}`} href={`/collection/${collection?.name}`}>
             <li
               key={`li_${key}`}
-              className="flex flex-col shadow rounded-md w-[30rem] h-96 mb-5 sm:mr-5"
+              className="flex flex-col shadow rounded-md w-[30rem] h-96 mb-5 sm:mr-5 dark:bg-dark"
             >
               <Card
                 key={`card_${key}`}
@@ -49,7 +49,7 @@ const Collections: CollectionType[] | any = ({
                 }
               >
                 <div className="flex">
-                  <div className="relative left-0 -top-10 flex border-4 border-white shadow-md rounded-2xl">
+                  <div className="relative left-0 -top-10 flex border-4 border-white shadow-md rounded-2xl dark:border-dark">
                     <Image
                       alt={collection?.name}
                       width="90"
@@ -62,7 +62,9 @@ const Collections: CollectionType[] | any = ({
                   </div>
                   <Meta
                     title={
-                      <span className="font-bold">{collection?.name}</span>
+                      <span className="font-bold dark:text-white">
+                        {collection?.name}
+                      </span>
                     }
                     className="ml-5 mt-1"
                   />

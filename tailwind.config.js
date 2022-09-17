@@ -5,6 +5,7 @@ module.exports = {
     './src/components/**/*.{js,ts,jsx,tsx}',
     './src/layouts/**/*.{js,ts,jsx,tsx}'
   ],
+  darkMode: 'class',
   theme: {
     extend: {
       fontFamily: {
@@ -20,8 +21,9 @@ module.exports = {
       warning: '#FFA600',
       danger: '#FF5630',
       dark: '#2E3A44',
+      deepdark: 'rgb(32, 34, 37)',
       info: '#1CA7EC',
-      black: '#2E3A44',
+      black: '#000000',
       grey1: '#A0AABF',
       grey2: '#C0C6D4',
       grey3: '#E3E8F1',

@@ -28,14 +28,15 @@ const Header: NextPage<HeaderPropsType> = ({
   currentAccount,
   balance,
   sidebar,
-  nightMode,
+  theme,
   setSidebar,
-  setNightMode,
+  setTheme,
   disconnectWallet,
   connectWallet
 }: HeaderPropsType) => {
   const router = useRouter();
   const [current, setCurrent] = useState('/');
+  const [switchOn, setSwitchOn] = useState(false);
 
   useEffect(() => {
     if (router.route.startsWith('/create')) {
@@ -49,6 +50,14 @@ const Header: NextPage<HeaderPropsType> = ({
     }
   }, [router.route, setTitle]);
 
+  useEffect(() => {
+    if (theme === 'dark') {
+      setSwitchOn(true);
+    } else {
+      setSwitchOn(false);
+    }
+  }, [theme]);
+
   const handleOpenSidebar = async () => {
     if (sidebar) {
       setSidebar(false);
@@ -58,7 +67,9 @@ const Header: NextPage<HeaderPropsType> = ({
   };
 
   const handleNightMode = async () => {
-    setNightMode((nightMode: boolean) => !nightMode);
+    const themeMode = theme === 'dark' ? 'light' : 'dark';
+    setTheme(themeMode);
+    localStorage.setItem('themeMode', themeMode);
   };
 
   const handleDisconnectWallet = async () => {
@@ -137,10 +148,10 @@ const Header: NextPage<HeaderPropsType> = ({
           sidebar
             ? `-translate-x-96 -right-96 w-96`
             : `translate-x-96 right-0 w-0`
-        } absolute flex flex-col h-screen  transition-all shadow-xl bg-light top-16 mt-1 z-50`}
+        } absolute flex flex-col h-screen  transition-all shadow-xl bg-light dark:bg-deepdark dark:border-l dark:text-light top-16 mt-1 dark:mt-0 z-50`}
       >
         <div className={sidebar ? `block` : `hidden`}>
-          <div className="flex items-center w-full h-20 border-b border-b-black border-opacity-10">
+          <div className="flex items-center w-full h-20 border-b border-b-black dark:border-b-grey2 border-opacity-10">
             <div className="flex flex-row justify-between w-full px-8">
               <div className="flex flex-row justify-start">
                 <div className="flex items-center">
@@ -161,8 +172,8 @@ const Header: NextPage<HeaderPropsType> = ({
             </div>
           </div>
           <div className="flex items-center justify-center w-full h-32">
-            <div className="flex flex-col items-center justify-evenly w-80 h-20 mt-8 mb-4 border border-black border-opacity-10 rounded-xl">
-              <div className="flex items-center justify-center w-full h-full rounded-t-xl py-1 text-white font-semibold bg-grey2">
+            <div className="flex flex-col items-center justify-evenly w-80 h-20 mt-8 mb-4 border border-black dark:border-grey2 border-opacity-10 rounded-xl">
+              <div className="flex items-center justify-center w-full h-full rounded-t-2xl py-1 text-white font-semibold bg-grey2 dark:bg-primary">
                 Total balance
               </div>
               <div className="py-2 text-xl font-bold">
@@ -177,9 +188,9 @@ const Header: NextPage<HeaderPropsType> = ({
             </div>
           </div>
           <div className="flex items-start justify-center w-full h-96">
-            <ul className="flex flex-col items-center justify-evenly w-80 h-80 mt-4 mb-8 border border-black border-opacity-10 rounded-xl">
+            <ul className="flex flex-col items-center justify-evenly w-80 h-80 mt-4 mb-8 border border-black dark:border-grey2 border-opacity-10 rounded-xl">
               <Link href="/explore">
-                <li className="w-full h-1/4 border-b border-black border-opacity-10 hover:shadow-md hover:cursor-pointer">
+                <li className="w-full h-1/4 border-b border-black dark:border-grey2 border-opacity-10 hover:shadow-md hover:cursor-pointer">
                   <p className="h-full flex flex-row items-center">
                     <EyeOutlined className="m-4 text-xl" />
                     <span className="text-md font-semibold">Explore</span>
@@ -187,7 +198,7 @@ const Header: NextPage<HeaderPropsType> = ({
                 </li>
               </Link>
               <Link href={isUserLoggedIn ? `/collection/create` : `/login`}>
-                <li className="w-full h-1/4 border-b border-black border-opacity-10 hover:shadow-md hover:cursor-pointer">
+                <li className="w-full h-1/4 border-b border-black dark:border-grey2 border-opacity-10 hover:shadow-md hover:cursor-pointer">
                   <p className="h-full flex flex-row items-center">
                     <FileAddOutlined className="m-4 text-xl" />
                     <span className="text-md font-semibold">
@@ -203,7 +214,7 @@ const Header: NextPage<HeaderPropsType> = ({
                     : `/login`
                 }
               >
-                <li className="w-full h-1/4 border-b border-black border-opacity-10 hover:shadow-md hover:cursor-pointer">
+                <li className="w-full h-1/4 border-b border-black dark:border-grey2 border-opacity-10 hover:shadow-md hover:cursor-pointer">
                   <p className="h-full flex flex-row items-center">
                     <PlusCircleOutlined className="m-4 text-xl" />
                     <span className="text-md font-semibold">
@@ -213,7 +224,7 @@ const Header: NextPage<HeaderPropsType> = ({
                 </li>
               </Link>
               <li
-                className="w-full h-1/4 border-b border-black border-opacity-10 hover:shadow-md hover:cursor-pointer"
+                className="w-full h-1/4 border-b border-black dark:border-grey2 border-opacity-10 hover:shadow-md hover:cursor-pointer"
                 onClick={handleNightMode}
               >
                 <div className="h-full flex flex-row items-center justify-between">
@@ -221,7 +232,7 @@ const Header: NextPage<HeaderPropsType> = ({
                     <SettingOutlined className="m-4 text-xl" />
                     <span className="text-md font-semibold">Night Mode</span>
                   </div>
-                  <Switch checked={nightMode} className="m-4" />
+                  <Switch checked={switchOn} className="m-4" />
                 </div>
               </li>
               <li
@@ -243,7 +254,7 @@ const Header: NextPage<HeaderPropsType> = ({
           </div>
         </div>
       </div>
-      <nav className="w-full h-16 flex flex-row justify-between shadow-md bg-light z-50">
+      <nav className="w-full h-16 flex flex-row justify-between shadow-md bg-light dark:bg-deepdark dark:text-light dark:border-b dark:border-b-grey2 z-50">
         <div className="w-full sm:w-4/6 h-full flex flex-row justify-between text-center align-middle">
           <div className="flex flex-row ml-5">
             <Link href="/">
@@ -293,12 +304,12 @@ const Header: NextPage<HeaderPropsType> = ({
           </div>
           <div className="flex justify-center w-full mx-2">
             <div className="relative flex items-center left-8 z-10">
-              <SearchOutlined className="text-2xl" />
+              <SearchOutlined className="text-2xl dark:text-white" />
             </div>
             <Input
               type="text"
               placeholder="Search items, collections, and accounts"
-              className="self-center w-full h-12 pl-10 z-0"
+              className="self-center w-full h-12 pl-10 z-0 rounded-xl bg-light dark:border-2 dark:bg-deepdark dark:border-grey1 dark:text-grey1"
             />
           </div>
         </div>
@@ -309,7 +320,7 @@ const Header: NextPage<HeaderPropsType> = ({
               selectedKeys={[current]}
               mode="horizontal"
               items={CreateMenu}
-              className="bg-light border-none text-lg"
+              className="bg-light dark:bg-deepdark dark:text-light border-none text-lg"
             />
           </div>
           <div className="flex sm:hidden flex-row items-center text-2xl">

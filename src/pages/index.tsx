@@ -93,7 +93,7 @@ const Home: NextPage<HomePropsType> = ({
     }
   };
   return (
-    <div className="w-full h-auto flex flex-col justify-between">
+    <div className="w-full h-auto flex flex-col justify-between ">
       <div className="w-full h-[50rem] relative opacity-30">
         <div
           style={{
@@ -120,7 +120,7 @@ const Home: NextPage<HomePropsType> = ({
         )}
       </div>
       <div className="w-full h-[35rem] absolute left-0 top-52">
-        <div className="w-full flex justify-center">
+        <div className="w-full flex justify-center mb-10">
           <div className="w-4/5 xl:w-[80rem] flex flex-col xl:flex-row justify-between">
             <div className="w-full xl:w-1/2 flex flex-col justify-evenly xl:justify-center xl:ml-10">
               <p className="w-full text-[2.7rem] font-bold leading-tight break-words flex justify-center xl:justify-start">
@@ -179,7 +179,7 @@ const Home: NextPage<HomePropsType> = ({
         </div>
         <div className="flex flex-col items-center">
           <div className="w-full xl:w-4/5 flex flex-col items-center">
-            <div className="mt-20 text-2xl font-semibold">Recently Items</div>
+            <div className="mt-10 text-2xl font-semibold">Recently Items</div>
             <div className="mt-5 mx-10">
               {trendItemList && <Items itemList={trendItemList} />}
             </div>

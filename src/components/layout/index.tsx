@@ -11,6 +11,7 @@ import { message } from 'antd';
 import { useRouter } from 'next/router';
 import { AppLayoutPropsType, IWindow } from '@libs/client/client';
 import { NextPage } from 'next';
+import { useTheme } from 'next-themes';
 
 const networkId = process.env.NEXT_PUBLIC_MARKET_NETWORK || '1663321162161';
 const mainetURL =
@@ -31,7 +32,7 @@ const BaseLayout: NextPage<AppLayoutPropsType> = ({
   const [userContract, setUserContract] = useState(null);
   const [balance, setbalance] = useState('');
   const [sidebar, setSidebar] = useState(false);
-  const [nightMode, setNightMode] = useState(false);
+  const { theme, setTheme } = useTheme();
   const router = useRouter();
 
   useEffect(() => {
@@ -71,6 +72,12 @@ const BaseLayout: NextPage<AppLayoutPropsType> = ({
     if (!isUserLoggedIn) {
       connectWallet();
     }
+
+    const settingThemeMode = async () => {
+      const themeMode = localStorage.getItem('themeMode') || 'light';
+      setTheme(themeMode);
+    };
+    settingThemeMode();
   }, []);
 
   const connectWallet = async () => {
@@ -219,9 +226,9 @@ const BaseLayout: NextPage<AppLayoutPropsType> = ({
         connectWallet={connectWallet}
         balance={balance}
         sidebar={sidebar}
-        nightMode={nightMode}
+        theme={theme}
         disconnectWallet={disconnectWallet}
-        setNightMode={setNightMode}
+        setTheme={setTheme}
         setSidebar={setSidebar}
       />
       {React.cloneElement(children, {

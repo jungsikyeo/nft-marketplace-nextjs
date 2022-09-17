@@ -15,11 +15,7 @@ const Items: ItemType[] | any = ({ itemList }: ItemType[] | any) => {
             <Card
               key={`card_${key}`}
               hoverable
-              className="flex flex-col justify-between"
-              style={{
-                width: '100%',
-                height: '100%'
-              }}
+              className="w-full h-full flex flex-col justify-between dark:bg-dark dark:border-dark dark:hover:bg-opacity-70 dark:hover:border-grey2"
               cover={
                 <div className="overflow-hidden">
                   <img
@@ -33,8 +29,13 @@ const Items: ItemType[] | any = ({ itemList }: ItemType[] | any) => {
               }
             >
               <Meta
-                title={myNft.name}
-                description={myNft.collection || 'default'}
+                title={<span className="dark:text-white">{myNft.name}</span>}
+                description={
+                  <span className="dark:text-grey2">
+                    {myNft.collection || 'default'}
+                  </span>
+                }
+                className="dark:text-white"
               />
             </Card>
           </li>

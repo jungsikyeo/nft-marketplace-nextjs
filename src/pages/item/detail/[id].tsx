@@ -214,7 +214,7 @@ const NftDetail: NextPage<ItemDefailType> = ({
                   {collectionName}
                 </Link>
               </Title>
-              <Title level={2} className="mt-0">
+              <Title level={2} className="mt-0 dark:text-white">
                 {name}
               </Title>
             </div>

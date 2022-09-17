@@ -280,7 +280,9 @@ const CollectionCreate: NextPage<CreateCollectionType> = ({
   return isUserLoggedIn ? (
     <div className="w-full h-full flex justify-center">
       <main className="flex flex-col items-start sm:w-1/2 md:w-2/5 w-2/3 py-11">
-        <Title level={1}>Create New Collection</Title>
+        <Title level={1} className="dark:text-white">
+          Create New Collection
+        </Title>
         <section className={`${sectionClass} mt-5`}>
           <div className={`${titleClass} ${requireClass}`}>Logo image</div>
           <div className={messageClass}>
@@ -376,6 +378,7 @@ const CollectionCreate: NextPage<CreateCollectionType> = ({
             <Input
               onChange={handleName}
               placeholder="Example: Treasures of the Planet"
+              className="rounded-xl dark:border-2 dark:bg-deepdark dark:text-grey1"
             />
           </div>
         </section>
@@ -404,6 +407,7 @@ const CollectionCreate: NextPage<CreateCollectionType> = ({
               rows={4}
               onChange={handleDescription}
               maxLength={1000}
+              className="rounded-xl dark:border-2 dark:bg-deepdark dark:text-grey1"
             />
           </div>
         </section>

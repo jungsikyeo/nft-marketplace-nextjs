@@ -82,19 +82,21 @@ const Explore: NextPage<ExplorePropsType> = ({
   }, [network, currentAccount]);
 
   return (
-    <div>
+    <div className="w-full">
       <div className="w-full h-screen flex justify-start">
         <main className="w-full h-full flex flex-col p-14">
           <div className="flex sm:flex-row flex-col w-42 w">
             <div className="flex flex-col justify-center items-center mt-2 sm:mt-0">
-              <Title level={1}>Explore collections</Title>
+              <Title level={1} className="dark:text-white">
+                Explore collections
+              </Title>
             </div>
           </div>
           <div className="w-full h-full mt-5">
             <div className="w-full h-auto flex justify-center sm:block sm:justify-start">
               <Tabs
                 defaultActiveKey="1"
-                className="w-full h-full text-base font-semibold"
+                className="w-full h-full text-base font-semibold dark:text-white"
               >
                 <TabPane tab="All" key="1">
                   <Collections collectionList={allList} />

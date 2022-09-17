@@ -157,7 +157,11 @@ const ItemCreate: NextPage<CreateItemType> = ({
       <div>
         <div className="w-full h-full flex justify-center">
           <main className="flex flex-col items-start sm:w-1/2 md:w-2/5 w-2/3 py-11">
-            <Title type="title-content" text="Create New Item" />
+            <Title
+              type="title-content"
+              text="Create New Item"
+              className="dark:text-white"
+            />
             <section className={sectionClass}>
               <div className={`${titleClass} ${requireClass}`}>
                 Image, Video, Audio, or 3D Model
@@ -188,7 +192,11 @@ const ItemCreate: NextPage<CreateItemType> = ({
             <section className={sectionClass}>
               <div className={`${titleClass} ${requireClass}`}>Name</div>
               <div className="w-full">
-                <Input onChange={handleName} placeholder="Item name" />
+                <Input
+                  onChange={handleName}
+                  placeholder="Item name"
+                  className="rounded-xl dark:border-2 dark:bg-deepdark dark:text-grey1"
+                />
               </div>
             </section>
             <section className={sectionClass}>
@@ -202,6 +210,7 @@ const ItemCreate: NextPage<CreateItemType> = ({
                 <Input
                   placeholder="https://yoursite.io/item/123"
                   onChange={handleExternalUrl}
+                  className="rounded-xl dark:border-2 dark:bg-deepdark dark:text-grey1"
                 />
               </div>
             </section>
@@ -216,6 +225,7 @@ const ItemCreate: NextPage<CreateItemType> = ({
                   rows={4}
                   placeholder="Provide a detailed description of your item."
                   onChange={handleDescription}
+                  className="rounded-xl dark:border-2 dark:bg-deepdark dark:text-grey1"
                 />
               </div>
             </section>
@@ -251,6 +261,7 @@ const ItemCreate: NextPage<CreateItemType> = ({
                   placeholder="Selection collection"
                   min={1}
                   defaultValue={1}
+                  className="rounded-xl dark:border-2 dark:bg-deepdark dark:text-grey1"
                 />
               </div>
             </section>
