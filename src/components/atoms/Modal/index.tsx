@@ -19,7 +19,7 @@ const Modal: React.FC<Props> = ({
       width={width}
     >
       <div className="border-b pb-2 border-b-grey3 mb-6">
-        <h2 className=" text-xl font-bold">{title}</h2>
+        <h2 className="text-xl font-bold dark:text-white">{title}</h2>
       </div>
       <div>{children}</div>
     </AModal>

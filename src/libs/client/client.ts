@@ -158,14 +158,6 @@ export type CurrentPriceOwnerType = {
 
 export type CurrentPriceNotOwnerType = {
   price: string;
-  setAddress: any;
-  openModal: any;
-  setOpenModal: any;
-  name: string;
-  imageUrl: string;
-  alertText: boolean;
   handleMakeOffer: any;
   handleBuyNow: any;
-  handleSellPrice: any;
-  handleListing: any;
 };

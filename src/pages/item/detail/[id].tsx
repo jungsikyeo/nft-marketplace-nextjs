@@ -225,7 +225,7 @@ const NftDetail: NextPage<ItemDefailType> = ({
                 <Card
                   size="small"
                   title={''}
-                  className="flex justify-center items-center rounded-lg mb-5"
+                  className="flex justify-center items-center rounded-lg mb-5 dark:bg-dark dark:border-grey3 dark:border-opacity-10"
                 >
                   <Image
                     src={imageUrl}
@@ -275,22 +275,23 @@ const NftDetail: NextPage<ItemDefailType> = ({
                   <Collapse
                     defaultActiveKey={['1', '2']}
                     expandIconPosition={'end'}
-                    className="rounded-lg mb-5"
+                    className="rounded-lg mb-5 dark:bg-dark dark:border-grey3 dark:border-opacity-10"
                   >
                     <Panel
                       header={
-                        <div className="flex items-center font-semibold">
+                        <div className="flex items-center font-semibold dark:text-white">
                           <AlignLeftOutlined />
                           <span className="ml-2">Description</span>
                         </div>
                       }
                       key="1"
+                      className="rounded-t-lg"
                     >
                       {description}
                     </Panel>
                     <Panel
                       header={
-                        <div className="flex items-center font-semibold">
+                        <div className="flex items-center font-semibold dark:text-white">
                           <TagsFilled />
                           <span className="ml-2">Properties</span>
                         </div>
@@ -301,7 +302,7 @@ const NftDetail: NextPage<ItemDefailType> = ({
                     </Panel>
                     <Panel
                       header={
-                        <div className="flex items-center font-semibold">
+                        <div className="flex items-center font-semibold dark:text-white">
                           <ProfileOutlined />
                           <span className="ml-2">About {collectionName}</span>
                         </div>
@@ -312,13 +313,13 @@ const NftDetail: NextPage<ItemDefailType> = ({
                     </Panel>
                     <Panel
                       header={
-                        <div className="flex items-center font-semibold">
+                        <div className="flex items-center font-semibold dark:text-white">
                           <ZoomInOutlined />
                           <span className="ml-2">Details</span>
                         </div>
                       }
                       key="4"
-                      className="rounded-b-lg"
+                      className="rounded-lg"
                     >
                       <Empty />
                     </Panel>
@@ -328,17 +329,17 @@ const NftDetail: NextPage<ItemDefailType> = ({
                 <div>
                   <Collapse
                     expandIconPosition={'end'}
-                    className="rounded-lg mb-5"
+                    className="rounded-lg mb-5 dark:bg-dark dark:border-grey3 dark:border-opacity-10"
                   >
                     <Panel
                       header={
-                        <div className="flex items-center font-semibold">
+                        <div className="flex items-center font-semibold dark:text-white">
                           <StockOutlined />
                           <span className="ml-2">Price History</span>
                         </div>
                       }
                       key="1"
-                      className="rounded-b-lg"
+                      className="rounded-b-lg dark:rounded-lg"
                     >
                       <Empty />
                     </Panel>
@@ -346,17 +347,17 @@ const NftDetail: NextPage<ItemDefailType> = ({
                   {/* Listings Box */}
                   <Collapse
                     expandIconPosition={'end'}
-                    className="rounded-lg mb-5"
+                    className="rounded-lg mb-5 dark:bg-dark dark:border-grey3 dark:border-opacity-10"
                   >
                     <Panel
                       header={
-                        <div className="flex items-center font-semibold">
+                        <div className="flex items-center font-semibold dark:text-white">
                           <TagFilled />
                           <span className="ml-2">Listings</span>
                         </div>
                       }
                       key="1"
-                      className="rounded-b-lg"
+                      className="rounded-b-lg  dark:rounded-lg"
                     >
                       <Empty />
                     </Panel>
@@ -365,17 +366,17 @@ const NftDetail: NextPage<ItemDefailType> = ({
                   <Collapse
                     defaultActiveKey={['1']}
                     expandIconPosition={'end'}
-                    className="rounded-lg"
+                    className="rounded-lg dark:bg-dark dark:border-grey3 dark:border-opacity-10"
                   >
                     <Panel
                       header={
-                        <div className="flex items-center font-semibold">
+                        <div className="flex items-center font-semibold dark:text-white">
                           <UnorderedListOutlined />
                           <span className="ml-2">Offers</span>
                         </div>
                       }
                       key="1"
-                      className="mb-5 rounded-b-lg"
+                      className="mb-5 rounded-b-lg dark:rounded-lg"
                     >
                       {/* <Empty /> */}
                       <Table

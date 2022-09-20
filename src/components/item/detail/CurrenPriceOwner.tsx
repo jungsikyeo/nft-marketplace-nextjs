@@ -37,10 +37,16 @@ const CurrentPriceOwner: CurrentPriceOwnerType | any = ({
         //   2:32am GMT+9
         // </>
       }
-      className="rounded-lg"
+      className="rounded-lg dark:bg-dark dark:border-grey3 dark:border-opacity-10"
     >
-      <Space direction="vertical" style={{ width: '100%' }}>
-        <Text type="secondary">Current price</Text>
+      <Space
+        direction="vertical"
+        style={{ width: '100%' }}
+        className="dark:bg-dark"
+      >
+        <Text type="secondary" className="dark:text-white">
+          Current price
+        </Text>
         <Space className="h-12">
           <div className="h-full flex items-center">
             <svg
@@ -76,7 +82,10 @@ const CurrentPriceOwner: CurrentPriceOwnerType | any = ({
               />
             </svg>
           </div>
-          <Title level={2} className="h-full flex justify-center mb-0">
+          <Title
+            level={2}
+            className="h-full flex justify-center mb-0 dark:text-white"
+          >
             {Number(price) === 0 ? `-` : price}
           </Title>
         </Space>
@@ -85,8 +94,9 @@ const CurrentPriceOwner: CurrentPriceOwnerType | any = ({
           onChange={event => {
             setAddress(event.target.value);
           }}
+          className="rounded-xl bg-light dark:border-2 dark:bg-dark dark:border-grey1 dark:text-grey1"
         />
-        <span className="flex justify-center items-center text-xs font-semibold -mt-1 mb-1">{`"${name}" will be transferred to ...`}</span>
+        <span className="flex justify-center items-center text-xs font-semibold -mt-1 mb-1 dark:text-white">{`"${name}" will be transferred to ...`}</span>
         <Button
           type="primary"
           size="large"
@@ -125,7 +135,7 @@ const CurrentPriceOwner: CurrentPriceOwnerType | any = ({
           onToggle={() => setOpenModal(!openModal)}
         >
           <Form layout="vertical">
-            <Form.Item label={name}>
+            <Form.Item label={<span className="dark:text-white">name</span>}>
               <Image
                 src={imageUrl}
                 alt={`${name}`}
@@ -133,7 +143,7 @@ const CurrentPriceOwner: CurrentPriceOwnerType | any = ({
                 preview={false}
               />
             </Form.Item>
-            <Form.Item label="Type">
+            <Form.Item label={<span className="dark:text-white">Type</span>}>
               <Radio.Group value="Fixed">
                 <Radio.Button value="Fixed">Fixed</Radio.Button>
                 <Radio.Button value="Auction" disabled>
@@ -141,7 +151,7 @@ const CurrentPriceOwner: CurrentPriceOwnerType | any = ({
                 </Radio.Button>
               </Radio.Group>
             </Form.Item>
-            <Form.Item label="Price" className="fle flex-col">
+            <Form.Item label={<span className="dark:text-white">Price</span>}>
               <InputNumber
                 placeholder="Amount"
                 max={Number(price) === 0 ? undefined : Number(price)}
