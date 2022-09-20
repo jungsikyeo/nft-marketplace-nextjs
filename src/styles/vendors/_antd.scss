@@ -76,6 +76,14 @@ html[class="dark"] {
     background-color: rgb(46 58 68 / var(--tw-bg-opacity));
   }
 
+  .ant-modal-header {
+    --tw-bg-opacity: 1 !important;
+    background-color: rgb(46 58 68 / var(--tw-bg-opacity));
+  }
+
+  .ant-modal-header > .ant-modal-title {
+    color: white;
+  }
 
   .ant-upload.ant-upload-select-picture-card {
     width: 104px;
