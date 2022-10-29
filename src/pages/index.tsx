@@ -13,7 +13,7 @@ import { useEffect, useState } from 'react';
 import { extractMetadataUrl } from '@libs/client/utils';
 import { useRouter } from 'next/router';
 
-const networkId = process.env.NEXT_PUBLIC_MARKET_NETWORK || 1663321162161;
+const networkId = process.env.NEXT_PUBLIC_MARKET_NETWORK || 1663729648756;
 
 const Home: NextPage<HomePropsType> = ({
   currentAccount,

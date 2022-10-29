@@ -34227,10 +34227,16 @@
       "links": {},
       "address": "0xD3e58563EF4f87e311e10b3CCde60b6ADd545798",
       "transactionHash": "0x096e9b18db349c20bbd8688b04c41e580ab2235236659ed1e81d7f79678a04b3"
+    },
+    "1663729648756": {
+      "events": {},
+      "links": {},
+      "address": "0xA0590e7C6e8DE4d10a6460B2292A0Ea059bBFe59",
+      "transactionHash": "0x91bbd019ea4d2c04625357cd7adff5722337fd302973a582075fc9e7a5ec7715"
     }
   },
   "schemaVersion": "3.4.9",
-  "updatedAt": "2022-09-16T19:16:46.025Z",
+  "updatedAt": "2022-10-29T17:40:21.703Z",
   "networkType": "ethereum",
   "devdoc": {
     "kind": "dev",

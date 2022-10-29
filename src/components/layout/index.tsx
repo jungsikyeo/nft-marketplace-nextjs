@@ -13,7 +13,7 @@ import { AppLayoutPropsType, IWindow } from '@libs/client/client';
 import { NextPage } from 'next';
 import { useTheme } from 'next-themes';
 
-const networkId = process.env.NEXT_PUBLIC_MARKET_NETWORK || '1663321162161';
+const networkId = process.env.NEXT_PUBLIC_MARKET_NETWORK || '1663729648756';
 const mainetURL =
   process.env.NEXT_PUBLIC_MAINNET_URL || 'https://ganache.yjsworld.tk';
 
