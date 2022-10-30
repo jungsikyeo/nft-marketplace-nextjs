@@ -316,8 +316,8 @@ const CollectionCreate: NextPage<CreateCollectionType> = ({
           <div className={`${titleClass}`}>Featured image</div>
           <div className={messageClass}>
             This image will be used for featuring your collection on the
-            homepage, category pages, or other promotional areas of OpenSea. 600
-            x 400 recommended.
+            homepage, category pages, or other promotional areas of OpenPlanet.
+            600 x 400 recommended.
           </div>
           <Upload
             action="/"
@@ -385,8 +385,8 @@ const CollectionCreate: NextPage<CreateCollectionType> = ({
         <section className={sectionClass}>
           <div className={titleClass}>URL</div>
           <div className={messageClass}>
-            Customize your URL on OpenSea. Must only contain lowercase letters,
-            numbers, and hyphens.
+            Customize your URL on OpenPlanet. Must only contain lowercase
+            letters, numbers, and hyphens.
           </div>
           <div>
             <Input

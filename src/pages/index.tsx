@@ -127,7 +127,7 @@ const Home: NextPage<HomePropsType> = ({
                 Discover, collect, and sell extraordinary NFTs
               </p>
               <p className="w-full mt-5 text-2xl font-normal flex justify-center xl:justify-start">
-                OpenSea is the world`s first and largest NFT marketplace
+                OpenPlanet is the world`s first and largest NFT marketplace
               </p>
               <div className="flex justify-center xl:justify-start mt-5">
                 <Button
